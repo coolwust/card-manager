@@ -1,0 +1,39 @@
+{
+  "name": "card-manager",
+  "version": "1.0.0",
+  "description": "phone card management system",
+  "keywords": [
+    "phone",
+    "card",
+    "manage"
+  ],
+  "license": "MIT",
+  "private": true,
+  "homepage": "https://github.com/coolwust/card-manager",
+  "bugs": {
+    "url": "https://github.com/coolwust/card-manager/issues",
+    "email": "coolwust@gmail.com"
+  },
+  "author": {
+    "name": "coolwust",
+    "email": "coolwust@gmail.com"
+  },
+  "engines": {
+    "node": ">=0.12.0"
+  },
+  "dependencies": {
+    "co": "^4.5.4",
+    "koa": "^0.21.0",
+    "koa-compress": "^1.0.8",
+    "koa-router": "^5.1.2",
+    "koa-static": "^1.4.9",
+    "marko": "^2.7.2",
+    "migrate": "^0.2.1",
+    "rethinkdb": "^2.0.2",
+    "socket.io": "^1.3.5"
+  },
+  "devDependencies": {
+    "chai": "^3.0.0",
+    "mocha": "^2.2.5"
+  }
+}
