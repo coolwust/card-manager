@@ -1,16 +1,20 @@
 <!doctype html>
 <html>
   <head>
-    <title>Order List</title>
+    <title>Orders</title>
     <script src="js/jquery-2.1.4.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/angular2.sfx.dev.js"></script>
+    <script src="js/orders.js"></script>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/order-list.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/orders.css">
   </head>
   <body>
-    <include template="./nav.marko" username="${data.username}" location="order-list">
-    <div id="main">
-    hello world
-    </div>
+    <include template="./nav.marko" username="${data.username}" location="orders" />
+    <aside id="status" class="container">server is up</aside>
+    <main class="container">
+      <orders></orders>
+    </main>
   </body>
 </html>

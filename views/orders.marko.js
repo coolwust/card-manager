@@ -6,12 +6,10 @@ function create(__helpers) {
       __nav_marko = __loadTemplate(require.resolve("./nav.marko"));
 
   return function render(data, out) {
-    out.w('<!doctype html> <html><head><title>Order List</title><script src="js/jquery-2.1.4.min.js"></script><script src="js/bootstrap.min.js"></script><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/order-list.css"></head><body>');
-    __helpers.i(out, __nav_marko, {"username": data.username, "location": "order-list", "body": __helpers.c(out, function() {
-      out.w('<div id="main">hello world</div>');
-    })});
+    out.w('<!doctype html> <html><head><title>Orders</title><script src="js/jquery-2.1.4.min.js"></script><script src="js/bootstrap.min.js"></script><script src="js/angular2.sfx.dev.js"></script><script src="js/orders.js"></script><link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="css/main.css"><link rel="stylesheet" type="text/css" href="css/orders.css"></head><body>');
+    __helpers.i(out, __nav_marko, {"username": data.username, "location": "orders"});
 
-    out.w('</body></html>');
+    out.w('<aside id="status" class="container">server is up</aside><main class="container"><orders></orders></main></body></html>');
   };
 }
 (module.exports = require("marko").c(__filename)).c(create);

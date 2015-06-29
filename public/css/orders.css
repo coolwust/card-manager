@@ -1,0 +1,11 @@
+.filter-element {
+  margin: 0 8px 0 0;
+}
+
+#search-bar {
+  margin: 0 0 12px 0;
+}
+
+#search-button {
+  float: right;
+}

@@ -6,11 +6,11 @@ function create(__helpers) {
       escapeXml = __helpers.x;
 
   return function render(data, out) {
-    out.w('<nav class="navbar navbar-default navbar-fixed-top"><div class="container"><div class="navbar-header"><a class="navbar-brand" href="#">Shi Jie Bang</a></div><div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"><ul class="nav navbar-nav"><li' +
+    out.w('<nav class="navbar navbar-default navbar-fixed-top"><div class="container"><div class="navbar-header"><a class="navbar-brand" href="/">Shi Jie Bang</a></div><div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"><ul class="nav navbar-nav"><li' +
       attr("class", (data.location=='orders' ? "active" : '')) +
       '><a href="#">Orders</a></li><li' +
       attr("class", (data.location=='new-order' ? "active" : '')) +
-      '><a href="#">New Order</a></li><li' +
+      '><a href="#">Add Order</a></li><li' +
       attr("class", (data.location=='l-card' ? "active" : '')) +
       '><a href="#">L-Cards</a></li><li' +
       attr("class", (data.location=='customers' ? "active" : '')) +
