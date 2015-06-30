@@ -8,10 +8,13 @@ function Connection() {
   this.bag.status = 'default';
   socket.on('connect', function () {
     this.bag.status = 'success';
-    this.bag.message = 'connection to server is established'
+    //this.bag.message = 'connection to server is established'
+    this.bag.message = 'connection: established'
   }.bind(this));
   socket.on('reconnecting', function (num) {
-    this.bag.message = 'connection to server is lost, number of failed reconnection attempts: ' + num
+    //this.bag.message = 'connection to server is lost, number of failed reconnection attempts: ' + num
+    this.bag.message = 'connection: lost';
+    this.bag.reconnectMessage = 'reconnection attempts: ' + num;
     this.bag.status = 'danger';
   }.bind(this));
 }
@@ -26,7 +29,8 @@ ServerStatusComponent.annotations = [
     appInjector: [Connection]
   }),
   new angular.ViewAnnotation({
-    templateUrl: '../tp/server-status.html'
+    templateUrl: '../tp/server-status.html',
+    directives: [angular.NgIf]
     
   })
 ];

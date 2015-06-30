@@ -17,6 +17,12 @@ document.addEventListener('DOMContentLoaded', function () {
   angular.bootstrap(OrdersComponent);
 });
 
+function FilterInfo() {
+  this.bag = {};
+  this.bag.filter = 'active';
+  this.bag.orderBy = 'date ordering';
+}
+
 function FilterBar() {
   this.bag = {};
   this.bag.filters = [
@@ -66,17 +72,18 @@ function FilterNormal() {
   this.bag.button = 'All';
 }
 
-function OrdersFilterComponent(bar, active, shipped, normal) {
+function OrdersFilterComponent(bar, active, shipped, normal, info) {
   this.bar = bar.bag;
   this.active = active.bag;
   this.shipped = shipped.bag;
   this.normal = normal.bag;
+  this.info = info.bag;
 }
 
 OrdersFilterComponent.annotations = [
   new angular.ComponentAnnotation({
     selector: 'orders-filter',
-    appInjector: [FilterBar, FilterActive, FilterShipped, FilterNormal]
+    appInjector: [FilterBar, FilterActive, FilterShipped, FilterNormal, FilterInfo]
   }),
   new angular.ViewAnnotation({
     templateUrl: '../tp/orders-filter.html',
@@ -85,7 +92,7 @@ OrdersFilterComponent.annotations = [
 ];
 
 OrdersFilterComponent.parameters = [
-  [FilterBar], [FilterActive], [FilterShipped], [FilterNormal]
+  [FilterBar], [FilterActive], [FilterShipped], [FilterNormal], [FilterInfo]
 ];
 
 OrdersFilterComponent.prototype.onSelectFilter = function (filter) {

@@ -3,13 +3,18 @@
   height: 0px;
 }
 
-#nav-bg {
-  height: 95px;
+#nav-clear {
+  margin-top: 51px;
+  height: 43px;
   background-color: #FFF;
 }
 
-#server-status {
+#filter-info {
   margin-top: 62px;
+}
+
+#filter-info span {
+  margin-right: 8px;
 }
 
 .filter-element {
