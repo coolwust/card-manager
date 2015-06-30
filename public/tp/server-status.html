@@ -1,0 +1,7 @@
+
+<div class="label" role="alert" 
+     [class.label-default]="conn.status === 'default'" 
+     [class.label-success]="conn.status === 'success'" 
+     [class.label-danger]="conn.status === 'danger'">
+  {{ conn.message }}
+</div>

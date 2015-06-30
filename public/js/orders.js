@@ -8,9 +8,8 @@ OrdersComponent.annotations = [
     selector: 'orders'
   }),
   new angular.ViewAnnotation({
-    template: '<orders-filter>' +
-      '<orders-list></orders-list>{{ barFilter }}',
-    directives: [OrdersFilterComponent]
+    template: '<orders-filter></orders-filter><orders-list></orders-list>',
+    directives: [OrdersFilterComponent, OrdersListComponent]
   })
 ];
 
@@ -61,7 +60,7 @@ function FilterNormal() {
   this.bag = {};
   this.bag.buttons = [
     'All',
-    'Narmal',
+    'Normal',
     'Error'
   ];
   this.bag.button = 'All';
@@ -72,8 +71,6 @@ function OrdersFilterComponent(bar, active, shipped, normal) {
   this.active = active.bag;
   this.shipped = shipped.bag;
   this.normal = normal.bag;
-  //var socket = io('192.168.56.102:3000');
-  //socket.emit('login');
 }
 
 OrdersFilterComponent.annotations = [
@@ -92,9 +89,10 @@ OrdersFilterComponent.parameters = [
 ];
 
 OrdersFilterComponent.prototype.onSelectFilter = function (filter) {
-  document.getElementById('filter-bar').value = '';
+  document.getElementById('filter-bar-input').value = '';
   this.bar.filter = filter;
   this.bar.init = false;
+  this.bar.valid = true;
   switch (filter) {
     case 'Date Starting':
     case 'Date Ending':
@@ -114,16 +112,16 @@ OrdersFilterComponent.prototype.onSelectFilter = function (filter) {
 
 OrdersFilterComponent.prototype.onBarKeyUp = function ($event) {
   this.bar.init = true;
-  var value = $event.target.value;
+  this.bar.value = $event.target.value;
   switch (this.bar.filter) {
     case 'Date Starting':
     case 'Date Ending':
     case 'Date Ordering':
       var regexp = /^(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/;
-      this.bar.valid = regexp.test(value);
+      this.bar.valid = regexp.test(this.bar.value);
       break;
     default:
-      this.bar.valid = (value.length > 0);
+      this.bar.valid = (this.bar.value.length > 0);
   }
 }
 
@@ -138,3 +136,25 @@ OrdersFilterComponent.prototype.onShippedMouseUp = function (button) {
 OrdersFilterComponent.prototype.onNormalMouseUp = function (button) {
   this.normal.button = button;
 }
+
+OrdersFilterComponent.prototype.onSearchMouseUp = function () {
+  if (this.bar.filter !== 'Any' && !this.bar.init) {
+    this.bar.init = true;
+    this.bar.valid = false;
+    return;
+  } else if (this.bar.init && !this.bar.valid) {
+    return;
+  }
+}
+
+function OrdersListComponent() {
+}
+
+OrdersListComponent.annotations = [
+  new angular.ComponentAnnotation({
+    selector: 'orders-list'
+  }),
+  new angular.ViewAnnotation({
+    templateUrl: '../tp/orders-list.html'
+  })
+];

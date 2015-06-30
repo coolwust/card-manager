@@ -1,35 +1,74 @@
+<div class="container navbar-fixed-top" id="server-status">
+  <server-status><server-status>
+</div>
+<div id="nav-padding" class="container"></div>
+
 <div class="panel panel-default">
   <div class="panel-body">
     <form>
 
 
-      <div class="input-group" id="search-bar">
+      <div class="input-group" id="filter-bar">
         <div class="input-group-btn">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ bar.filter }} <span class="caret"></span></button>
+          <button type="button" 
+                  class="btn btn-default dropdown-toggle" 
+                  data-toggle="dropdown" 
+                  aria-haspopup="true" 
+                  aria-expanded="false">
+            {{ bar.filter }} <span class="caret"></span>
+          </button>
           <ul class="dropdown-menu">
-            <li *ng-for="#filter of bar.filters" ><a href="#" (click)="onSelectFilter(filter)">{{ filter }}</a></li>
+            <li *ng-for="#filter of bar.filters" >
+              <a href="#" (click)="onSelectFilter(filter)">{{ filter }}</a>
+            </li>
           </ul>
         </div>
-        <div class="form-group" [class.has-success]="bar.valid && bar.init" [class.has-error]="!bar.valid && bar.init" [class.has-feedback]="bar.valid">
-          <input type="text" id="filter-bar" class="form-control" [placeholder]="bar.placeholder" [disabled]="bar.disabled" (keyup)="onBarKeyUp($event)">
-          <span class="glyphicon form-control-feedback" aria-hidden="true" *ng-if="bar.init" [class.glyphicon-ok]="bar.valid && bar.init" [class.glyphicon-remove]="!bar.valid && bar.init"></span>
+        <div class="form-group" [class.has-success]="bar.valid && bar.init" 
+             [class.has-error]="!bar.valid && bar.init" 
+             [class.has-feedback]="bar.valid">
+          <input type="text" id="filter-bar-input" class="form-control" 
+                 [placeholder]="bar.placeholder" 
+                 [disabled]="bar.disabled" (keyup)="onBarKeyUp($event)">
+          <span class="glyphicon form-control-feedback" aria-hidden="true" 
+                *ng-if="bar.init" 
+                [class.glyphicon-ok]="bar.valid && bar.init" 
+                [class.glyphicon-remove]="!bar.valid && bar.init">
+          </span>
         </div>
       </div>
 
 
       <div class="btn-group filter-element" role="group">
-        <button *ng-for="#button of active.buttons" type="button" class="btn btn-default" [class.active]="active.button === button" (mouseup)="onActiveMouseUp(button)">{{ button }}</button>
+        <button *ng-for="#button of active.buttons" 
+                type="button" class="btn btn-default" 
+                [class.left-button]="button === 'Active'"
+                [class.active]="active.button === button" 
+                (mouseup)="onActiveMouseUp(button)">
+          {{ button }}
+        </button>
       </div>
 
       <div class="btn-group filter-element" role="group">
-        <button *ng-for="#button of shipped.buttons" type="button" class="btn btn-default" [class.active]="shipped.button === button" (mouseup)="onShippedMouseUp(button)">{{ button }}</button>
+        <button *ng-for="#button of shipped.buttons" type="button" 
+                class="btn btn-default" 
+                [class.left-button]="button === 'All'"
+                [class.active]="shipped.button === button" 
+                (mouseup)="onShippedMouseUp(button)">
+          {{ button }}
+        </button>
       </div>
 
       <div class="btn-group filter-element" role="group">
-        <button *ng-for="#button of normal.buttons" type="button" class="btn btn-default" [class.active]="normal.button === button" (mouseup)="onNormalMouseUp(button)">{{ button }}</button>
+        <button *ng-for="#button of normal.buttons" 
+                type="button" class="btn btn-default" 
+                [class.left-button]="button === 'All'"
+                [class.active]="normal.button === button" 
+                (mouseup)="onNormalMouseUp(button)">
+          {{ button }}
+        </button>
       </div>
 
-      <button type="submit" class="btn btn-primary" id="search-button">Search</button>
+      <button type="submit" class="btn btn-primary" id="search-button" (mouseup)="onSearchMouseUp()">Search</button>
 
     </form>
 
