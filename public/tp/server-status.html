@@ -4,6 +4,6 @@
      [class.label-danger]="conn.status === 'danger'">
   {{ conn.message }}
 </span>
-<span *ng-if="conn.status === 'danger'" class="label label-danger" role="alert">
+<span *ng-if="conn.status === 'danger'" class="label label-warning" role="alert">
   {{ conn.reconnectMessage }}
 </span>

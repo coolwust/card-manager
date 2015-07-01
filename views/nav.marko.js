@@ -8,11 +8,11 @@ function create(__helpers) {
   return function render(data, out) {
     out.w('<nav class="navbar navbar-default navbar-fixed-top"><div class="container"><div class="navbar-header"><a class="navbar-brand" href="/">Shi Jie Bang</a></div><div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"><ul class="nav navbar-nav"><li' +
       attr("class", (data.location=='orders' ? "active" : '')) +
-      '><a href="#">Orders</a></li><li' +
+      '><a href="/orders">Orders</a></li><li' +
       attr("class", (data.location=='new-order' ? "active" : '')) +
       '><a href="#">Add Order</a></li><li' +
-      attr("class", (data.location=='l-card' ? "active" : '')) +
-      '><a href="#">L-Cards</a></li><li' +
+      attr("class", (data.location=='l-cards' ? "active" : '')) +
+      '><a href="/l-cards">L-Cards</a></li><li' +
       attr("class", (data.location=='customers' ? "active" : '')) +
       '><a href="#">Customers</a></li></ul><ul class="nav navbar-nav navbar-right"><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">' +
       escapeXml(data.username) +

@@ -7,10 +7,12 @@
   margin-top: 51px;
   height: 43px;
   background-color: #FFF;
+  z-index: 100;
 }
 
 #filter-info {
   margin-top: 62px;
+  z-index: 100;
 }
 
 #filter-info span {
@@ -49,20 +51,7 @@
   margin: 20px auto;
 }
 
-
-@keyframes element-show {
-  from {
-    opacity: 0.4;
-  }
-
-  to {
-    opacity: 1.0;
-  }
-}
-
 .list-element {
-  animation-name: element-show;
-  animation-duration: 1s;
   background: #fefefe;
   border: 2px solid #fcfcfc;
   box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4);

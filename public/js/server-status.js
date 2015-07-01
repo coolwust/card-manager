@@ -38,7 +38,3 @@ ServerStatusComponent.annotations = [
 ServerStatusComponent.parameters = [
   [Connection]
 ];
-
-document.addEventListener('DOMContentLoaded', function () {
-  angular.bootstrap(ServerStatusComponent);
-});

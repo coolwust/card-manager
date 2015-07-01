@@ -16,6 +16,7 @@ var auth = require('./lib/auth.js');
 var login = require('./lib/login.js');
 var index = require('./lib/index.js');
 var orders = require('./lib/orders.js');
+var lcards = require('./lib/l-cards.js');
 var logout = require('./lib/logout.js');
 
 var app = koa();
@@ -30,6 +31,7 @@ router.all('/login', login());
 router.get('/logout', logout());
 router.get('/', index());
 router.get('/orders', orders());
+router.get('/l-cards', lcards());
 app.use(router.routes());
 
 var server = http.createServer(app.callback());
