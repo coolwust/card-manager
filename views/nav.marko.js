@@ -11,8 +11,8 @@ function create(__helpers) {
       '><a href="/orders">Orders</a></li><li' +
       attr("class", (data.location=='new-order' ? "active" : '')) +
       '><a href="#">Add Order</a></li><li' +
-      attr("class", (data.location=='l-cards' ? "active" : '')) +
-      '><a href="/l-cards">L-Cards</a></li><li' +
+      attr("class", (data.location=='lcards' ? "active" : '')) +
+      '><a href="/lcards">LCards</a></li><li' +
       attr("class", (data.location=='customers' ? "active" : '')) +
       '><a href="#">Customers</a></li></ul><ul class="nav navbar-nav navbar-right"><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">' +
       escapeXml(data.username) +

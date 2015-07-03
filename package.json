@@ -24,6 +24,7 @@
   "dependencies": {
     "bcrypt": "^0.8.3",
     "co": "^4.5.4",
+    "istextorbinary": "^1.0.2",
     "koa": "^0.21.0",
     "koa-compress": "^1.0.8",
     "koa-router": "^5.1.2",
