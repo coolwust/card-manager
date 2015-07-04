@@ -24,7 +24,7 @@ function SearchModel() {
       region: new angular.Control('')
     }),
     query: { id: '', date: '', region: 'all' },
-    snapshot: '', page: 1, count: 10, results: []
+    snapshot: '', page: 1, count: 20, results: []
   };
 }
 
@@ -44,6 +44,7 @@ function LCardsComponent(search, upload) {
   this.socket = io(config.host + ':' + config.port + '/lcards');
   this.upload = upload;
   this.search = search;
+  this.onSearch('search');
 }
 
 LCardsComponent.annotations = [
