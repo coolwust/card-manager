@@ -6,9 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function OrdersComponent() {
   this.inputBar = {
-    filters: [ 'Any', 'Date Starting', 'Date Ending', 'Date Ordering',
-      'Customer Name', 'Order ID', 'Phone Number', 'Passport ID',
-      'L-Card Number', 'B-Card Number'
+    filters: [
+      'Any', 'Date Starting', 'Date Ending', 'Date Ordering', 'Customer Name',
+      'Order ID', 'Phone Number', 'Passport ID', 'L-Card Number', 'B-Card Number'
     ],
     filter: 'Any', disabled: true, placeholder: '', init: false
   };
@@ -37,7 +37,7 @@ OrdersComponent.prototype.onSelectInputBarFilter = function (filter) {
     case 'Date Starting':
     case 'Date Ending':
     case 'Date Ordering':
-      this.inputBar.placeholder = 'MM-DD-YY';
+      this.inputBar.placeholder = 'YYYY.MM.DD';
       this.inputBar.disabled = false;
       break;
     case 'Any':
@@ -57,7 +57,7 @@ OrdersComponent.prototype.onInputBarKeyUp = function ($event) {
     case 'Date Starting':
     case 'Date Ending':
     case 'Date Ordering':
-      var regexp = /^(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/;
+      var regexp = /^(19|20)\d\d[ .](0[1-9]|1[012])[- \/.](0[1-9]|[12][0-9]|3[01])$/;
       this.inputBar.valid = regexp.test(this.inputBar.value);
       break;
     default:

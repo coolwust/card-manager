@@ -7,7 +7,10 @@ exports.up = function(next) {
   r
     .connect(config)
     .then(function (conn) {
-      return r.tableCreate('lcard').run(conn);
+      return r.tableCreate('lcard').run(conn).then(function () { return conn });
+    })
+    .then(function (conn) {
+      return r.table('lcard').indexCreate('date_added').run(conn);
     })
     .then(next.bind(null, null), next);
 };

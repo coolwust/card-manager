@@ -3,7 +3,7 @@
 test :
 	@./node_modules/migrate/bin/migrate up 1>/dev/null && \
 	./node_modules/mocha/bin/mocha --harmony --recursive \
-	    test/connect.js test/session.js && \
+	    test/connect.js test/session.js test/lcards.js && \
 	./node_modules/migrate/bin/migrate down 1>/dev/null
 
 db-up :

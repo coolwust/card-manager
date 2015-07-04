@@ -42,4 +42,21 @@
   width: 250px;
   line-height: 10px;
   margin-right: 15px;
+  margin-top: 8px;
+}
+
+.max-cell {
+  width: 100%;
+}
+
+.min-cell {
+  white-space: nowrap;
+  padding-right: 20px !important;
+}
+
+.icon {
+  font-size: 105%;
+  vertical-align: center;
+  position: relative;
+  top: 2px;
 }
