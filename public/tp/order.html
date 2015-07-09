@@ -41,7 +41,7 @@
           <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'insert'">Add</button>
           <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'revise'">Revise</button>
         </div>
-        <div class="alert alert-success animated fadeIn" role="alert" *ng-if="message">{{ message }}</div>
+        <div *ng-if="message" class="alert alert-success animated fadeIn" role="alert">{{ message }}</div>
       </div>
     </div>
   </div>

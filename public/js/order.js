@@ -83,9 +83,9 @@ OrderComponent.parameters = [
 OrderComponent.prototype.onClose = function () {
   var form = document.getElementById('order-form');
   if (form) form.reset();
-  this.state = null;
-  this.message = null;
   this.reset();
+  this.message = null;
+  this.state = null;
 }
 
 OrderComponent.prototype.changeState = function (action) {

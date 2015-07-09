@@ -107,7 +107,11 @@
   padding-bottom: 8px;
 }
 
-#order .form-group {
+#order .form {
+  padding-bottom: -10px;
+}
+
+#order .input-group {
   margin: 7px 6px 7px 6px !important;
 }
 
