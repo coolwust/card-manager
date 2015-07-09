@@ -41,16 +41,7 @@ OrdersComponent.parameters = [
 ];
 
 OrdersComponent.prototype.onOrderInsert = function () {
-  if (this.bag.order.state) return;
   this.bag.order.state = 'insert';
-}
-
-OrdersComponent.prototype.onOrderIdInsert = function ($event) {
-  if ($event.target.value === '4') {
-    this.order.exists = true;
-  } else {
-    this.order.exists = false;
-  }
 }
 
 OrdersComponent.prototype.onSubmitOrder = function () {

@@ -21,6 +21,7 @@ function OrderComponent(bag) {
     { na: 'state',        sl: 1, rd: 0, va: 'Normal',          fa: 'heartbeat',  op: ['Normal', 'Error']     },
     { na: 'address',      ta: 1, rd: 0, ph: 'Address'                                                        },
     { na: 'note',         ta: 1, rd: 0, ph: 'Note'                                                           },
+    { na: 'category',     sl: 1, rd: 0, va: 'New',         fa: 'graduation-cap',       op: ['New', 'Legacy']  },
     { na: 'shipping',     sl: 1, rd: 0, va: 'Pending',         fa: 'cube',       op: ['Pending', 'Shipped']  },
     { na: 'carrier',      ip: 1, rd: 0, ph: 'Carrier',         fa: 'truck',      dp: ['shipping', 'Shipped'] },
     { na: 'trackingId',   ip: 1, rd: 0, ph: 'Tracking ID',     fa: 'barcode',    dp: ['shipping', 'Shipped'] },
@@ -83,6 +84,7 @@ OrderComponent.prototype.onClose = function () {
   var form = document.getElementById('order-form');
   if (form) form.reset();
   this.state = null;
+  this.message = null;
   this.reset();
 }
 
@@ -108,7 +110,7 @@ OrderComponent.prototype.onSubmit = function () {
       this.socket.on('insert', function (data) {
         this.querying = false;
         this.state = 'revise';
-        this.message = 'inserted on' + new Date();
+        this.message = 'Inserted on ' + new Date();
       }.bind(this));
       break;
     default:
@@ -119,10 +121,10 @@ OrderComponent.prototype.onSubmit = function () {
         this.querying = false;
         switch (this.state) {
           case 'revise':
-            this.message = 'revised on' + new Date();
+            this.message = 'Revised on ' + new Date();
             break;
           case 'update':
-            this.message = 'updated on' + new Date();
+            this.message = 'Updated on ' + new Date();
         }
       }.bind(this));
       break;

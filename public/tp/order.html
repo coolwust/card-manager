@@ -13,7 +13,6 @@
         <h4 class="modal-title">{{ title }}</h4>
       </div>
       <div class="modal-body">
-        <div class="alert alert-success" role="alert" *ng-if="message">{{ message }}</div>
         <form class="form-inline" id="order-form" [ng-form-model]="form" (submit)="onSubmit()">
           <div class="form-group" *ng-for="#group of groups">
             <div class="input-group" *ng-if="!group.hd">
@@ -42,6 +41,7 @@
           <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'insert'">Add</button>
           <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'revise'">Revise</button>
         </div>
+        <div class="alert alert-success animated fadeIn" role="alert" *ng-if="message">{{ message }}</div>
       </div>
     </div>
   </div>
