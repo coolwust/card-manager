@@ -1,50 +1,47 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
-    <div *ng-if="bag.order.state === 'wait'">
+    <div *ng-if="state === 'wait'">
       <div class="modal-body">
         please wait...
       </div>
     </div>
-    <div *ng-if="bag.order.state !== 'wait'">
+    <div *ng-if="state !== 'wait'">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">
           <span aria-hidden="true" (click)="onClose()">&times;</span>
         </button>
-        <h4 class="modal-title">{{ bag.order.title }}</h4>
+        <h4 class="modal-title">{{ title }}</h4>
       </div>
       <div class="modal-body">
-        <form class="form-inline" id="order-form" [ng-form-model]="form" (submit)="onOrderSave()">
+        <div class="alert alert-success" role="alert" *ng-if="message">{{ message }}</div>
+        <form class="form-inline" id="order-form" [ng-form-model]="form" (submit)="onSubmit()">
           <div class="form-group" *ng-for="#group of groups">
-            <div *ng-if="group.dp">
-              <div class="input-group" *ng-if="form.controls[group.dp[0]].value === group.dp[1]">
-                <div class="input-group-addon" *ng-if="group.fa || group.fc">
-                  <i class="fa" *ng-if="group.fa" [class]="'fa-' + group.fa"></i>
-                  <span *ng-if="group.fc">{{ group.fc }}</span>
-                </div>
-                <input class="form-control" type="text" *ng-if="group.ip" [placeholder]="group.ph" [readonly]="group.rd" [ng-control]="group.na" [value]="group.value">
-              </div>
-            </div>
-            <div class="input-group" *ng-if="!group.dp">
+            <div class="input-group" *ng-if="!group.hd">
               <div class="input-group-addon" *ng-if="group.fa || group.fc">
                 <i class="fa" *ng-if="group.fa" [class]="'fa-' + group.fa"></i>
                 <span *ng-if="group.fc">{{ group.fc }}</span>
               </div>
-              <input class="form-control" type="text" *ng-if="group.ip" [placeholder]="group.ph" [readonly]="group.rd" [ng-control]="group.na" [value]="group.value">
+              <input class="form-control" type="text" *ng-if="group.ip" [placeholder]="group.ph" [readonly]="group.rd" [ng-control]="group.na" [value]="group.va">
               <select class="form-control" *ng-if="group.sl" [ng-control]="group.na">
                 <option *ng-if="group.ph" value="" selected disabled>{{ group.ph }}</option>
-                <option *ng-for="#option of group.op" [value]="option">{{ option }}</option>
+                <option *ng-for="#option of group.op; #i = index" [value]="option" [selected]="!group.ph && i === 0">{{ option }}</option>
               </select>
-              <textarea class="form-control" rows="3" *ng-if="group.ta" [placeholder]="group.ph" [readonly]="group.rd" [ng-control]="group.na" [value]="group.value"></textarea>
+              <textarea class="form-control" rows="3" *ng-if="group.ta" [placeholder]="group.ph" [readonly]="group.rd" [ng-control]="group.na" [value]="group.va"></textarea>
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger pull-left" form="order-form" *ng-if="state === 'update' || state === 'inserted'">Delete</button>
-        <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state === 'inserted'">Another</button>
-        <button type="submit" class="btn btn-primary" form="order-form">Save</button>
-        <button type="submit" class="btn btn-success animated bounce infinite" form="order-form" disabled="disabled" *ng-if="state === 'success'">Success</button>
-        <button type="button" class="btn btn-warning" form="order-form" disabled="disabled" *ng-if="state === 'standby'">Loading</button>
+        <div *ng-if="querying">
+          <button type="button" class="btn btn-warning" form="order-form" disabled="disabled">Standby</button>
+        </div>
+        <div *ng-if="!querying">
+          <button type="button" class="btn btn-danger pull-left" form="order-form" *ng-if="state === 'update' || state === 'revise'">Delete</button>
+          <button type="button" class="btn btn-primary" form="order-form" *ng-if="state === 'revise'" (click)="onAnother()">Another</button>
+          <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state === 'update'">Update</button>
+          <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'insert'">Add</button>
+          <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'revise'">Revise</button>
+        </div>
       </div>
     </div>
   </div>

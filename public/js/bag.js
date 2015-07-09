@@ -1,3 +1,5 @@
 'use strict';
 
-function Bag() {}
+function Bag() {
+  this.order = {};
+}

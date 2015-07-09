@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function OrdersComponent(bag) {
   this.bag = bag;
   this.socket = io(config.host + ':' + config.port + '/orders');
+  this.bag.socket = this.socket;
   this.regions = config.regions;
   this.order = order;
   this.inputBar = {
@@ -40,7 +41,8 @@ OrdersComponent.parameters = [
 ];
 
 OrdersComponent.prototype.onOrderInsert = function () {
-  this.bag.order.state = 'update';
+  if (this.bag.order.state) return;
+  this.bag.order.state = 'insert';
 }
 
 OrdersComponent.prototype.onOrderIdInsert = function ($event) {

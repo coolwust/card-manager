@@ -2,65 +2,16 @@
 
 function OrderComponent(bag) {
 
+  var self = this;
 
-  function dateValidator(control) {
-    var regexp = /^(19|20)\d\d[ .](0[1-9]|1[012])[- \/.](0[1-9]|[12][0-9]|3[01])$/;
-    if (control.value === '' || regexp.test(control.value)) return null;
-    return { error: true };
-  }
-
-  function contentValidator(control) {
-    if (control.value && control.value.trim().length === control.value.length) return null;
-    return { error: true };
-  }
-  this.bag = bag;
-  this.bag.order = {};
-
-  var state;
-  Object.defineProperty(bag.order, 'state', {
-    set: function (value) {
-      switch (value) {
-        case 'insert':
-          window.setTimeout(function () {
-            state = 'insert';
-          }, 200);
-          break;
-        case 'update':
-          state = 'wait';
-          window.setTimeout(function () {
-            state = 'update';
-          }, 2000);
-          break;
-      }
-    },
-    get: function () {
-      return state;
-    }
-  });
-  Object.defineProperty(bag.order, 'title', {
-    get: function () {
-      switch (bag.order.state) {
-        case 'insert':
-          return 'New Order';
-          break;
-        case 'update':
-          return 'Order Edit';
-          break;
-        case 'wait':
-          return 'Please Wait';
-          break;
-      }
-    }
-  });
-  //function shipped() {
-  //  for (var i = 0; i < this.groups.length; i++) {
-  //    if (this.groups[i].name === 'shipping
-  //  }
-  //}
+  this.state = null;
+  this.socket = bag.socket;
+  this.query = false;
+  this.message = null;
   this.groups = [
     { na: 'dateCreated',  ip: 1, rd: 1, ph: 'Date Created',    fa: 'clock-o'                                 },
     { na: 'lcard',        ip: 1, rd: 1, ph: 'LCard ID',        fc: 'L'                                       },
-    { na: 'orderId',      ip: 1, rd: 0, ph: 'Order ID',        fa: 'cube'                                    },
+    { na: 'orderId',      ip: 1, rd: 0, ph: 'Order ID',        fa: 'key'                                     },
     { na: 'customerName', ip: 1, rd: 0, ph: 'Customer Name',   fa: 'user'                                    },
     { na: 'passportId',   ip: 1, rd: 0, ph: 'Passport ID',     fa: 'credit-card'                             },
     { na: 'phoneNumber',  ip: 1, rd: 0, ph: 'Phone Number',    fa: 'phone'                                   },
@@ -70,20 +21,48 @@ function OrderComponent(bag) {
     { na: 'state',        sl: 1, rd: 0, va: 'Normal',          fa: 'heartbeat',  op: ['Normal', 'Error']     },
     { na: 'address',      ta: 1, rd: 0, ph: 'Address'                                                        },
     { na: 'note',         ta: 1, rd: 0, ph: 'Note'                                                           },
-    { na: 'shipping',     sl: 1, rd: 0, va: 'Pending',         fa: 'inbox',      op: ['Pending', 'Shipped']  },
+    { na: 'shipping',     sl: 1, rd: 0, va: 'Pending',         fa: 'cube',       op: ['Pending', 'Shipped']  },
     { na: 'carrier',      ip: 1, rd: 0, ph: 'Carrier',         fa: 'truck',      dp: ['shipping', 'Shipped'] },
     { na: 'trackingId',   ip: 1, rd: 0, ph: 'Tracking ID',     fa: 'barcode',    dp: ['shipping', 'Shipped'] },
     { na: 'bcard',        ip: 1, rd: 0, ph: 'BCard ID',        fc: 'B',          dp: ['shipping', 'Shipped'] },
   ];
-  var obj = {};
-  for (var i = 0; i < this.groups.length; i++) {
-  console.log(this.groups[i].na);
+
+  for (var i = 0, obj = {}; i < this.groups.length; i++) {
     obj[this.groups[i].na] = new angular.Control(this.groups[i].va || '');
+    var dp = this.groups[i].dp;
+    if (dp) {
+      Object.defineProperty(this.groups[i], 'hd', {
+        get: function() {
+          return self.form.controls[dp[0]].value !== dp[1];
+        }
+      });
+    }
+    if (this.groups.length - 1 === i) this.form = new angular.ControlGroup(obj);
   }
-  this.form = new angular.ControlGroup(obj);
-  this.state = '';
-  this.title = '';
-  this.exists = null;
+
+  Object.defineProperty(bag.order, 'state', {
+    set: function (value) {
+      self.changeState(value);
+    }
+  });
+
+  Object.defineProperty(this, 'title', {
+    get: function () {
+      switch (self.state) {
+        case 'insert':
+          return 'Add Order';
+          break;
+        case 'revise':
+          return 'Revise Order';
+          break;
+        case 'update':
+          return 'Update Order';
+          break;
+        default:
+          return 'Loading...';
+      }
+    }
+  });
 }
 
 OrderComponent.annotations = [
@@ -103,4 +82,65 @@ OrderComponent.parameters = [
 OrderComponent.prototype.onClose = function () {
   var form = document.getElementById('order-form');
   if (form) form.reset();
+  this.state = null;
+  this.reset();
+}
+
+OrderComponent.prototype.changeState = function (action) {
+  if (action === 'insert') {
+    window.setTimeout(function () {
+      this.state = 'insert';
+    }.bind(this), 500);
+  } else if (action === 'update') {
+    this.state = 'wait';
+    window.setTimeout(function () {
+      this.state = 'update';
+    }.bind(this));
+  }
+}
+
+OrderComponent.prototype.onSubmit = function () {
+  switch (this.state) {
+    case 'insert':
+      this.socket.emit('insert', {
+        hehe: 'haah'
+      });
+      this.socket.on('insert', function (data) {
+        this.querying = false;
+        this.state = 'revise';
+        this.message = 'inserted on' + new Date();
+      }.bind(this));
+      break;
+    default:
+      this.socket.emit('update', {
+        hehe: 'haah'
+      });
+      this.socket.on('update', function (data) {
+        this.querying = false;
+        switch (this.state) {
+          case 'revise':
+            this.message = 'revised on' + new Date();
+            break;
+          case 'update':
+            this.message = 'updated on' + new Date();
+        }
+      }.bind(this));
+      break;
+  }
+  this.querying = true;
+  this.message = null;
+}
+
+OrderComponent.prototype.onAnother = function () {
+  var form = document.getElementById('order-form');
+  if (form) form.reset();
+  this.reset();
+  this.state = 'insert';
+  this.message = null;
+}
+
+OrderComponent.prototype.reset = function () {
+  for (var i = 0, obj = {}; i < this.groups.length; i++) {
+    this.form.controls[this.groups[i].na].updateValue(this.groups[i].va || '');
+  }
 }
