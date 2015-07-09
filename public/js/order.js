@@ -58,26 +58,27 @@ function OrderComponent(bag) {
   //  }
   //}
   this.groups = [
-    { name: 'dateCreated',  input:    true, read: true,  fa: 'fa-clock-o',     placeholder: 'Date Created' },
-    { name: 'lcard',        input:    true, read: true,  fc: 'L',              placeholder: 'LCard ID' },
-    { name: 'orderId',      input:    true, read: false, fa: 'fa-cube',        placeholder: 'Order ID' },
-    { name: 'customerName', input:    true, read: false, fa: 'fa-user',        placeholder: 'Customer Name' },
-    { name: 'passportId',   input:    true, read: false, fa: 'fa-credit-card', placeholder: 'Passport ID' },
-    { name: 'phoneNumber',  input:    true, read: false, fa: 'fa-phone',       placeholder: 'Phone Number' },
-    { name: 'dateStarting', input:    true, read: false, fa: 'fa-play',        placeholder: 'Date Starting' },
-    { name: 'dateEnding',   input:    true, read: false, fa: 'fa-stop',        placeholder: 'Date Ending' },
-    { name: 'region',       select:   true, read: false, fa: 'fa-globe',       placeholder: 'Select a Region', options: config.regions },
-    { name: 'state',        select:   true, read: false, fa: 'fa-heartbeat',                                   options: ['Normal', 'Error'] },
-    { name: 'address',      textarea: true, read: false,                       placeholder: 'Address' },
-    { name: 'note',         textarea: true, read: false,                       placeholder: 'Note' },
-    { name: 'shipping',     select:   true, read: false, fa: 'fa-inbox',                                       options: ['Pending', 'Shipped'] },
-    { name: 'carrier',      input:    true, read: false, fa: 'fa-truck',       placeholder: 'Carrier' },
-    { name: 'trackingId',   input:    true, read: false, fa: 'fa-barcode',     placeholder: 'Tracking ID' },
-    { name: 'bcard',        input:    true, read: false, fc: 'B',              placeholder: 'BCard ID' },
+    { na: 'dateCreated',  ip: 1, rd: 1, ph: 'Date Created',    fa: 'clock-o'                                 },
+    { na: 'lcard',        ip: 1, rd: 1, ph: 'LCard ID',        fc: 'L'                                       },
+    { na: 'orderId',      ip: 1, rd: 0, ph: 'Order ID',        fa: 'cube'                                    },
+    { na: 'customerName', ip: 1, rd: 0, ph: 'Customer Name',   fa: 'user'                                    },
+    { na: 'passportId',   ip: 1, rd: 0, ph: 'Passport ID',     fa: 'credit-card'                             },
+    { na: 'phoneNumber',  ip: 1, rd: 0, ph: 'Phone Number',    fa: 'phone'                                   },
+    { na: 'dateStarting', ip: 1, rd: 0, ph: 'Date Starting',   fa: 'play'                                    },
+    { na: 'dateEnding',   ip: 1, rd: 0, ph: 'Date Ending',     fa: 'stop'                                    },
+    { na: 'region',       sl: 1, rd: 0, ph: 'Select a Region', fa: 'globe',      op: config.regions          },
+    { na: 'state',        sl: 1, rd: 0, va: 'Normal',          fa: 'heartbeat',  op: ['Normal', 'Error']     },
+    { na: 'address',      ta: 1, rd: 0, ph: 'Address'                                                        },
+    { na: 'note',         ta: 1, rd: 0, ph: 'Note'                                                           },
+    { na: 'shipping',     sl: 1, rd: 0, va: 'Pending',         fa: 'inbox',      op: ['Pending', 'Shipped']  },
+    { na: 'carrier',      ip: 1, rd: 0, ph: 'Carrier',         fa: 'truck',      dp: ['shipping', 'Shipped'] },
+    { na: 'trackingId',   ip: 1, rd: 0, ph: 'Tracking ID',     fa: 'barcode',    dp: ['shipping', 'Shipped'] },
+    { na: 'bcard',        ip: 1, rd: 0, ph: 'BCard ID',        fc: 'B',          dp: ['shipping', 'Shipped'] },
   ];
   var obj = {};
   for (var i = 0; i < this.groups.length; i++) {
-    obj[this.groups[i].name] = new angular.Control();
+  console.log(this.groups[i].na);
+    obj[this.groups[i].na] = new angular.Control(this.groups[i].va || '');
   }
   this.form = new angular.ControlGroup(obj);
   this.state = '';
