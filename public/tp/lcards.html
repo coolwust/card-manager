@@ -3,7 +3,7 @@
 <div class="container navbar-fixed-top" id="panel-info">
   <server-status></server-status>
   <span *ng-if="search.snapshot">
-    <span class="label label-info">filter: </span><span class="label label-info">order by: date added</span><span class="label label-info">page: {{ search.page }}</span>
+    <span class="label label-default">filter: {{ search.filter }}</span><span class="label label-default">order by: date added</span><span class="label label-default">page: {{ search.page }}</span>
   </span>
 </div>
 

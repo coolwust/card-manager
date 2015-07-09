@@ -5,7 +5,7 @@
 </div>
 <div id="nav-padding" class="container"></div>
 
-<div class="panel panel-default">
+<div class="panel panel-default" id="panel-left">
   <div class="panel-body">
     <form>
       <div class="input-group" id="filter-bar">
@@ -69,12 +69,16 @@
 
       <button type="submit" class="btn btn-primary" id="search-button" (mouseup)="onBtnSearchMouseUp()">Search</button>
     </form>
-
-
   </div>
 </div>
 
+<div class="panel panel-default" id="panel-new">
+  <a href="#" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#order" (click)="onOrderInsert()">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+  </a>
+</div>
 
+<div class="container"></div>
 
 
 
@@ -170,3 +174,5 @@
     <li class="next disabled"><a href="#">Old <span aria-hidden="true">&rarr;</span></a></li>
   </ul>
 </div>
+
+<order class="modal fade" id="order" tabindex="-1" role="dialog"></order>

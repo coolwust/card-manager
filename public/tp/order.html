@@ -1,0 +1,42 @@
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div *ng-if="bag.order.state === 'wait'">
+      <div class="modal-body">
+        please wait...
+      </div>
+    </div>
+    <div *ng-if="bag.order.state !== 'wait'">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true" (click)="onClose()">&times;</span>
+        </button>
+        <h4 class="modal-title">{{ bag.order.title }}</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-inline" id="order-form" (submit)="onOrderSave()">
+          <div class="form-group" *ng-for="#group of groups">
+            <div class="input-group">
+              <div class="input-group-addon" *ng-if="group.fa || group.fc">
+                <i class="fa" *ng-if="group.fa" [class]="group.fa"></i>
+                <span *ng-if="group.fc">{{ group.fc }}</span>
+              </div>
+              <input class="form-control" type="text" *ng-if="group.input" [placeholder]="group.placeholder" [readonly]="group.read" [ng-control]="group.name" [value]="group.value">
+              <select class="form-control" *ng-if="group.select" [ng-control]="group.name" >
+                <!--<option *ng-if="#group.placeholder" value="" selected disabled>{{ placeholder }}</option>-->
+                <option *ng-for="#option of group.options; #i = index" [value]="option" [selected]="group.selected">{{ option }}</option>
+              </select>
+              <textarea class="form-control" rows="3" *ng-if="group.textarea" [placeholder]="group.placeholder" [readonly]="group.read" [ng-control]="group.name" [value]="group.value"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger pull-left" form="order-form" *ng-if="state === 'update' || state === 'inserted'">Delete</button>
+        <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state === 'inserted'">Another</button>
+        <button type="submit" class="btn btn-primary" form="order-form">Save</button>
+        <button type="submit" class="btn btn-success animated bounce infinite" form="order-form" disabled="disabled" *ng-if="state === 'success'">Success</button>
+        <button type="button" class="btn btn-warning" form="order-form" disabled="disabled" *ng-if="state === 'standby'">Loading</button>
+      </div>
+    </div>
+  </div>
+</div>

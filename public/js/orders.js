@@ -4,7 +4,11 @@ document.addEventListener('DOMContentLoaded', function () {
   angular.bootstrap(OrdersComponent);
 });
 
-function OrdersComponent() {
+function OrdersComponent(bag) {
+  this.bag = bag;
+  this.socket = io(config.host + ':' + config.port + '/orders');
+  this.regions = config.regions;
+  this.order = order;
   this.inputBar = {
     filters: [
       'Any', 'Date Starting', 'Date Ending', 'Date Ordering', 'Customer Name',
@@ -20,13 +24,40 @@ function OrdersComponent() {
 
 OrdersComponent.annotations = [
   new angular.ComponentAnnotation({
-    selector: 'orders'
+    selector: 'orders',
+    appInjector: [Bag]
   }),
   new angular.ViewAnnotation({
     templateUrl: '../tp/orders.html',
-    directives: [angular.NgFor, angular.NgIf, ServerStatusComponent]
+    directives: [
+      angular.NgFor, angular.NgIf, angular.CSSClass, angular.formDirectives,
+      ServerStatusComponent, OrderComponent]
   })
 ];
+
+OrdersComponent.parameters = [
+  [Bag]
+];
+
+OrdersComponent.prototype.onOrderInsert = function () {
+  this.bag.order.state = 'update';
+}
+
+OrdersComponent.prototype.onOrderIdInsert = function ($event) {
+  if ($event.target.value === '4') {
+    this.order.exists = true;
+  } else {
+    this.order.exists = false;
+  }
+}
+
+OrdersComponent.prototype.onSubmitOrder = function () {
+  switch (this.order.state) {
+    case 'insert':
+      console.log('hehe');
+    break;
+  }
+}
 
 OrdersComponent.prototype.onSelectInputBarFilter = function (filter) {
   document.getElementById('filter-bar-input').value = '';

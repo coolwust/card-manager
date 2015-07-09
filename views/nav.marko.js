@@ -9,8 +9,6 @@ function create(__helpers) {
     out.w('<nav class="navbar navbar-default navbar-fixed-top"><div class="container"><div class="navbar-header"><a class="navbar-brand" href="/">Shi Jie Bang</a></div><div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"><ul class="nav navbar-nav"><li' +
       attr("class", (data.location=='orders' ? "active" : '')) +
       '><a href="/orders">Orders</a></li><li' +
-      attr("class", (data.location=='new-order' ? "active" : '')) +
-      '><a href="#">Add Order</a></li><li' +
       attr("class", (data.location=='lcards' ? "active" : '')) +
       '><a href="/lcards">LCards</a></li><li' +
       attr("class", (data.location=='customers' ? "active" : '')) +

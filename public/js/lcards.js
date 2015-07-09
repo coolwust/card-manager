@@ -84,23 +84,29 @@ LCardsComponent.prototype.onUpload = function () {
   }.bind(this));
 }
 
-LCardsComponent.prototype.onSearch = function (option) {
-  if (option === 'search') {
-    if (!this.search.form.valid) return;
-    if (JSON.stringify(this.search.query) === this.search.snapshot && this.search.page === 1) return;
-    this.search.query.page = this.search.page = 1;
-    this.search.snapshot = JSON.stringify(this.search.query);
-    var data = JSON.parse(this.search.snapshot);
-  } else if (option === 'newer') {
-    var data = JSON.parse(this.search.snapshot);
-    if (data.page === 1) return;
-    data.page = --this.search.page;
-    this.search.snapshot = JSON.stringify(data);
-  } else if (option === 'older') {
-    var data = JSON.parse(this.search.snapshot);
-    if (this.search.results.length <= this.search.count) return;
-    data.page = ++this.search.page;
-    this.search.snapshot = JSON.stringify(data);
+LCardsComponent.prototype.onSearch = function (action) {
+  switch (action) {
+    case 'search':
+      if (!this.search.form.valid) return;
+      var str = JSON.stringify(this.search.query);
+      if (str === this.search.snapshot && this.search.page === 1) return;
+      this.search.snapshot = str;
+      this.search.filter = 'region=' + this.search.query.region;
+      this.search.filter += this.search.query.id ? ', id=' + this.search.query.id : '';
+      this.search.filter += this.search.query.date ? ', date=' + this.search.query.date : '';
+      var data = JSON.parse(this.search.snapshot);
+      data.page = this.search.page = 1;
+      break;
+    case 'newer':
+      if (this.search.page === 1) return;
+      var data = JSON.parse(this.search.snapshot);
+      data.page = --this.search.page;
+      break;
+    case 'older':
+      if (this.search.results.length <= this.search.count) return;
+      var data = JSON.parse(this.search.snapshot);
+      data.page = ++this.search.page;
+      break;
   }
   data.count = this.search.count;
   this.state = 'searching';
@@ -109,7 +115,7 @@ LCardsComponent.prototype.onSearch = function (option) {
   if (data.date) {
     var arr = data.date.split(/[.]/).map(function (value) {
       return parseInt(value);
-    });;
+    });
     data.date = { year: arr[0], month: arr[1], day: arr[2] };
   }
   this.socket.emit('search', data);
