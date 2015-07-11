@@ -15,9 +15,9 @@
       <div class="modal-body">
         <form class="form-inline" id="order-form" [ng-form-model]="form" (submit)="onSubmit()">
           <div class="form-group has-feedback" *ng-for="#group of groups">
-            <div class="input-group" *ng-if="!group.hd">
+            <div class="input-group" [ng-style]="{'display': group.hd ? 'none' : 'inline-table'}">
               <div class="input-group-addon" *ng-if="group.fa || group.fc">
-                <i class="fa" *ng-if="group.fa" [class]="'fa-' + group.fa"></i>
+                <i *ng-if="group.fa" class="fa" [class]="'fa-' + group.fa"></i>
                 <span *ng-if="group.fc">{{ group.fc }}</span>
               </div>
               <input class="form-control" type="text" *ng-if="group.ip" [placeholder]="group.ph" [readonly]="group.rd" [ng-control]="group.na" [value]="group.va">

@@ -8,6 +8,9 @@ function OrderComponent(bag) {
   this.socket = bag.socket;
   this.query = false;
   this.message = { state: null, text: ''};
+  this.querying = false;
+  this.snapshot = null;
+
   this.groups = [
     { na: 'ctime',    ip: 1, rd: 1, re: 0, vl: null,       ph: 'Date Created',    fa: 'clock-o'                                 },
     { na: 'lcard',    ip: 1, rd: 1, re: 0, vl: null,       ph: 'LCard ID',        fc: 'L'                                       },
@@ -31,27 +34,29 @@ function OrderComponent(bag) {
   for (var i = 0, obj = {}; i < this.groups.length; i++) {
     var group = this.groups[i];
     obj[group.na] = new ng.Control(group.va || '', group.vl ? validators[group.vl] : undefined);
-    obj[group.na].registerOnChange(function (value) {
-      console.log(value);
-    });
-    var dp = group.dp;
-    if (dp) {
+    if (group.dp) {
       Object.defineProperty(group, 'hd', {
         get: function() {
-          return self.form.controls[dp[0]].value !== dp[1];
+          return self.form.controls[group.dp[0]].value !== group.dp[1];
         }
       });
     }
     if (this.groups.length - 1 === i) this.form = new ng.ControlGroup(obj);
   }
 
-  this.form.controls.shipping.valueChanges.observer({next: function (value) {console.log(value)}});
-
-
-
   Object.defineProperty(bag.order, 'state', {
     set: function (value) {
-      self.changeState(value);
+      if (value === 'insert') {
+        self.state = 'insert';
+      } else if (value === 'update') {
+        self.state = 'wait';
+        self.socket.emit('get', { id: '123' });
+        self.socket.on('got', function (data) {
+          self.snapshot = data;
+          self.state = 'update';
+          self.fill(data);
+        });
+      }
     }
   });
 
@@ -80,7 +85,7 @@ OrderComponent.annotations = [
   }),
   new ng.ViewAnnotation({
     templateUrl: '../tp/order.html',
-    directives: [ng.NgFor, ng.NgIf, ng.CSSClass, ng.formDirectives]
+    directives: [ng.NgFor, ng.NgIf, ng.CSSClass, ng.formDirectives, ng.NgStyle]
   })
 ];
 
@@ -94,62 +99,20 @@ OrderComponent.prototype.onClose = function () {
   this.reset();
   this.message = {};
   this.state = null;
-}
-
-OrderComponent.prototype.changeState = function (action) {
-  if (action === 'insert') {
-    this.state = 'insert';
-  } else if (action === 'update') {
-    this.state = 'wait';
-    window.setTimeout(function () {
-      this.state = 'update';
-    }.bind(this));
-  }
+  this.snapshot = null;
 }
 
 OrderComponent.prototype.onSubmit = function () {
-
-  for (var i = 0, obj = {}; i < this.groups.length; i++) {
-    var group = this.groups[i];
-    if (group.re && this.form.controls[group.na].value === '') {
-      this.message.state = 'warning';
-      this.message.text = 'Please fill out all required field!';
-      return;
-    }
-  }
-
+  var data = this.collect();
+  if (!data) return;
   switch (this.state) {
     case 'insert':
-      this.socket.emit('insert', {
-        hehe: 'haah'
-      });
-      this.socket.on('insert', function (data) {
-        this.querying = false;
-        this.state = 'revise';
-        this.message.text = 'Inserted on ' + new Date();
-        this.message.state = 'success';
-      }.bind(this));
+      this.insert(data);
       break;
+      this.update(data);
     default:
-      this.socket.emit('update', {
-        hehe: 'haah'
-      });
-      this.socket.on('update', function (data) {
-        this.querying = false;
-        switch (this.state) {
-          case 'revise':
-            this.message.text = 'Revised on ' + new Date();
-            this.message.state = 'success';
-            break;
-          case 'update':
-            this.message.text = 'Updated on ' + new Date();
-            this.message.state = 'success';
-        }
-      }.bind(this));
       break;
   }
-  this.querying = true;
-  this.message = {};
 }
 
 OrderComponent.prototype.onAnother = function () {
@@ -158,10 +121,75 @@ OrderComponent.prototype.onAnother = function () {
   this.reset();
   this.state = 'insert';
   this.message = {};
+  this.snapshot = null;
 }
 
 OrderComponent.prototype.reset = function () {
-  for (var i = 0, obj = {}; i < this.groups.length; i++) {
+  for (var i = 0; i < this.groups.length; i++) {
     this.form.controls[this.groups[i].na].updateValue(this.groups[i].va || '');
   }
+}
+
+OrderComponent.prototype.fill = function (data) {
+  for (var i = 0; i < this.groups.length; i++) {
+    var group = this.groups[i];
+    if (data[group.na]) this.form.controls[group.na].updateValue(data[group.na]);
+  }
+}
+
+OrderComponent.prototype.collect = function () {
+  var data = {};
+  for (var i = 0; i < this.groups.length; i++) {
+    var group = this.groups[i];
+    if (group.rd) continue;
+    var value = this.form.controls[group.na].value;
+    if (group.dp && this.form.controls[group.dp[0]].value !== group.dp[1]) {
+      continue;
+    }
+    if (group.re && value === '') {
+      this.message.state = 'warning';
+      this.message.text = 'Please fill out all the required fields.';
+      return;
+    }
+    if (value === '') continue;
+    data[group.na] = value;
+  }
+  return data;
+}
+
+OrderComponent.prototype.insert = function (data) {
+  this.querying = true;
+  this.message = {};
+  this.socket.emit('insert', data);
+  this.socket.on('inserted', function (data) {
+    this.querying = false;
+    if (data.errors) {
+      this.message.state = 'error';
+      this.message.text = data.first_error;
+    } else {
+      this.fill(data);
+      this.state = 'revise';
+      this.message.state = 'success';
+      this.message.text = 'Successfully added an order on ' + new Date();
+      this.snapshot = data;
+    }
+  }.bind(this));
+}
+
+OrderComponent.prototype.update = function (data) {
+  this.querying = true;
+  this.message = {};
+  this.socket.emit('update', data);
+  this.socket.on('updated', function (data) {
+    this.querying = false;
+    switch (this.state) {
+      case 'revise':
+        this.message.text = 'Revised on ' + new Date();
+        this.message.state = 'success';
+        break;
+      case 'update':
+        this.message.text = 'Updated on ' + new Date();
+        this.message.state = 'success';
+    }
+  }.bind(this));
 }
