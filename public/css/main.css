@@ -1,3 +1,25 @@
 *:focus {
   outline: 0 !important;
 }
+
+.has-feedback i {
+  line-height: 34px !important;
+}
+
+.has-feedback i span {
+  margin-top: 4px !important;
+  top: 2px;
+  position: relative;
+}
+
+.input-group-addon i {
+  line-height: 10px !important;
+}
+
+select, input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 0.01px;
+  text-overflow: '';
+}
+

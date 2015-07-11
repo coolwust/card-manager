@@ -1,15 +1,13 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded', function () {
-  angular.bootstrap(OrdersComponent);
+  ng.bootstrap(OrdersComponent);
 });
 
 function OrdersComponent(bag) {
   this.bag = bag;
   this.socket = io(config.host + ':' + config.port + '/orders');
-  this.bag.socket = this.socket;
   this.regions = config.regions;
-  this.order = order;
   this.inputBar = {
     filters: [
       'Any', 'Date Starting', 'Date Ending', 'Date Ordering', 'Customer Name',
@@ -21,18 +19,21 @@ function OrdersComponent(bag) {
   this.btnShip = { values: [ 'All', 'Preparing', 'Shipped' ], value: 'All' };
   this.btnError = { values: [ 'All', 'Normal', 'Error' ], value: 'All' };
   this.info = { filter: 'active', orderBy: 'date ordering' };
+
+  bag.socket = this.socket;
+  bag.navigation.location = 'orders';
 }
 
 OrdersComponent.annotations = [
-  new angular.ComponentAnnotation({
+  new ng.ComponentAnnotation({
     selector: 'orders',
-    appInjector: [Bag]
+    viewInjector: [Bag]
   }),
-  new angular.ViewAnnotation({
+  new ng.ViewAnnotation({
     templateUrl: '../tp/orders.html',
     directives: [
-      angular.NgFor, angular.NgIf, angular.CSSClass, angular.formDirectives,
-      ServerStatusComponent, OrderComponent]
+      ng.NgFor, ng.NgIf, ng.CSSClass, ng.formDirectives, 
+      NavigationComponent, OrderComponent]
   })
 ];
 

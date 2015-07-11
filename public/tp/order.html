@@ -14,7 +14,7 @@
       </div>
       <div class="modal-body">
         <form class="form-inline" id="order-form" [ng-form-model]="form" (submit)="onSubmit()">
-          <div class="form-group" *ng-for="#group of groups">
+          <div class="form-group has-feedback" *ng-for="#group of groups">
             <div class="input-group" *ng-if="!group.hd">
               <div class="input-group-addon" *ng-if="group.fa || group.fc">
                 <i class="fa" *ng-if="group.fa" [class]="'fa-' + group.fa"></i>
@@ -26,6 +26,8 @@
                 <option *ng-for="#option of group.op; #i = index" [value]="option" [selected]="!group.ph && i === 0">{{ option }}</option>
               </select>
               <textarea class="form-control" rows="3" *ng-if="group.ta" [placeholder]="group.ph" [readonly]="group.rd" [ng-control]="group.na" [value]="group.va"></textarea>
+              <i class="fa form-control-feedback" *ng-if="group.re && form.controls[group.na].value === ''"><span>*<span></i>
+              <i class="fa fa-exclamation-triangle form-control-feedback" *ng-if="!form.controls[group.na].valid"></i>
             </div>
           </div>
         </form>
@@ -41,7 +43,9 @@
           <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'insert'">Add</button>
           <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'revise'">Revise</button>
         </div>
-        <div *ng-if="message" class="alert alert-success animated fadeIn" role="alert">{{ message }}</div>
+        <div *ng-if="message.state === 'warning'" class="alert animated fadeIn alert-warning" role="alert">{{ message.text }}</div>
+        <div *ng-if="message.state === 'error'" class="alert animated fadeIn alert-danger" role="alert">{{ message.text }}</div>
+        <div *ng-if="message.state === 'success'" class="alert animated fadeIn alert-success" role="alert">{{ message.text }}</div>
       </div>
     </div>
   </div>

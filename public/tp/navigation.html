@@ -1,0 +1,24 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">Shi Jie Bang</a>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li [class.active]="location=='orders'"><a href="/orders">Orders <span class="badge">{{ notification }}</span></a></li>
+        <li [class.active]="location=='lcards'"><a href="/lcards">LCards <span class="badge">{{ notification }}</span></a></li>
+        <li [class.active]="location=='customers'"><a href="#">Customers <span class="badge">{{ notification }}</span></a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">username<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Moderators</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

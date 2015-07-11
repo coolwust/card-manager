@@ -1,39 +1,18 @@
-#nav-padding {
-  margin-top: 95px;
-  height: 0px;
-}
-
-#nav-clear {
-  margin-top: 51px;
-  height: 43px;
-  background-color: #FFF;
-  z-index: 100;
-}
-
-#panel-info {
-  margin-top: 62px;
-  z-index: 100;
-}
-
-#panel-info span {
-  margin-right: 6px;
-}
-
-#panel-left {
+#search {
   width: 49%;
   float: left;
   height: 213px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-#panel-right {
+#upload {
   width: 50%;
   float: right;
   height: 213px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-#panel-right p {
+#upload p {
   display: block;
   margin-bottom: 17px;
   height: 80px;
@@ -62,4 +41,10 @@
   vertical-align: center;
   position: relative;
   top: 2px;
+}
+
+#filter {
+  margin-bottom: 10px;
+  width: 100%;
+  padding: 10px;
 }

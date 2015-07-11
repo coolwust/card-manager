@@ -1,0 +1,36 @@
+#order .modal-body {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#order .form {
+  padding-bottom: -10px;
+}
+
+#order .input-group {
+  margin: 7px 6px 7px 6px !important;
+}
+
+#order .alert {
+  margin: 15px 0 0 0 !important;
+  padding: 5px 8px 5px 8px !important;
+  text-align: center;
+}
+
+#order select, #order input {
+  width: 235px;
+  border-radius: 0 4px 4px 0 !important;
+}
+
+#order textarea {
+  border-radius: 4px !important;
+  width: 554px;
+  resize: none;
+}
+
+#order .input-group-addon {
+  border-radius: 4px 0 0 4px !important;
+  width: 36px !important;
+  padding: 2px !important;
+  border-right: 0;
+}

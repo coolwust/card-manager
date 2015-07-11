@@ -24,13 +24,13 @@ function ServerStatusComponent(conn) {
 }
 
 ServerStatusComponent.annotations = [
-  new angular.ComponentAnnotation({
+  new ng.ComponentAnnotation({
     selector: 'server-status',
-    appInjector: [Connection]
+    viewInjector: [Connection]
   }),
-  new angular.ViewAnnotation({
+  new ng.ViewAnnotation({
     templateUrl: '../tp/server-status.html',
-    directives: [angular.NgIf]
+    directives: [ng.NgIf]
     
   })
 ];

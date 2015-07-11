@@ -10,7 +10,7 @@ exports.up = function(next) {
       return r.tableCreate('lcard').run(conn).then(function () { return conn });
     })
     .then(function (conn) {
-      return r.table('lcard').indexCreate('date_added').run(conn);
+      return r.table('lcard').indexCreate('ctime').run(conn);
     })
     .then(next.bind(null, null), next);
 };
