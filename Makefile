@@ -2,8 +2,8 @@
 
 test :
 	@./node_modules/migrate/bin/migrate up 1>/dev/null && \
-	./node_modules/mocha/bin/mocha --harmony --recursive \
-	    test/connect.js test/session.js test/lcards.js && \
+	./node_modules/mocha/bin/mocha --harmony --recursive --timeout=15000 \
+	    test/orders.js && \
 	./node_modules/migrate/bin/migrate down 1>/dev/null
 
 db-up :
@@ -11,3 +11,8 @@ db-up :
 
 server-up :
 	@node --harmony server.js
+
+	    
+# test/connect.js \
+# test/session.js \
+# test/lcards.js && \

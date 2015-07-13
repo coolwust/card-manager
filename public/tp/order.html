@@ -21,7 +21,7 @@
                 <span *ng-if="group.fc">{{ group.fc }}</span>
               </div>
               <input class="form-control" type="text" *ng-if="group.ip" [placeholder]="group.ph" [readonly]="group.rd" [ng-control]="group.na" [value]="group.va">
-              <select class="form-control" *ng-if="group.sl" [ng-control]="group.na">
+              <select class="form-control" *ng-if="group.sl" [ng-control]="group.na" [disabled]="group.rd">
                 <option *ng-if="group.ph" value="" selected disabled>{{ group.ph }}</option>
                 <option *ng-for="#option of group.op; #i = index" [value]="option" [selected]="!group.ph && i === 0">{{ option }}</option>
               </select>

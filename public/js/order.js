@@ -12,37 +12,49 @@ function OrderComponent(bag) {
   this.snapshot = null;
 
   this.groups = [
-    { na: 'ctime',    ip: 1, rd: 1, re: 0, vl: null,       ph: 'Date Created',    fa: 'clock-o'                                 },
-    { na: 'lcard',    ip: 1, rd: 1, re: 0, vl: null,       ph: 'LCard ID',        fc: 'L'                                       },
-    { na: 'id',       ip: 1, rd: 0, re: 1, vl: 'order',    ph: 'Order ID',        fa: 'key'                                     },
-    { na: 'name',     ip: 1, rd: 0, re: 1, vl: 'trim',     ph: 'Customer Name',   fa: 'user'                                    },
-    { na: 'passport', ip: 1, rd: 0, re: 1, vl: 'passport', ph: 'Passport ID',     fa: 'credit-card'                             },
-    { na: 'phone',    ip: 1, rd: 0, re: 1, vl: 'phone',    ph: 'Phone Number',    fa: 'phone'                                   },
-    { na: 'start',    ip: 1, rd: 0, re: 1, vl: 'date',     ph: 'Date Starting',   fa: 'play'                                    },
-    { na: 'end',      ip: 1, rd: 0, re: 1, vl: 'date',     ph: 'Date Ending',     fa: 'stop'                                    },
-    { na: 'region',   sl: 1, rd: 0, re: 1, vl: null,       ph: 'Select a Region', fa: 'globe',      op: config.regions          },
-    { na: 'health',   sl: 1, rd: 0, re: 1, vl: null,       va: 'Normal',          fa: 'heartbeat',  op: ['Normal', 'Error']     },
-    { na: 'address',  ta: 1, rd: 0, re: 1, vl: 'trim',     ph: 'Address'                                                        },
-    { na: 'note',     ta: 1, rd: 0, re: 0, vl: 'trim',     ph: 'Note'                                                           },
-    { na: 'category', sl: 1, rd: 0, re: 1, vl: null,       va: 'New',             fa: 'diamond',    op: ['New', 'Legacy']       },
-    { na: 'shipping', sl: 1, rd: 0, re: 1, vl: null,       va: 'Pending',         fa: 'cube',       op: ['Pending', 'Shipped']  },
-    { na: 'carrier',  ip: 1, rd: 0, re: 1, vl: 'trim',     ph: 'Carrier',         fa: 'truck',      dp: ['shipping', 'Shipped'] },
-    { na: 'tracking', ip: 1, rd: 0, re: 1, vl: 'tracking', ph: 'Tracking ID',     fa: 'barcode',    dp: ['shipping', 'Shipped'] },
-    { na: 'bcard',    ip: 1, rd: 0, re: 1, vl: 'bcard',    ph: 'BCard ID',        fc: 'B',          dp: ['shipping', 'Shipped'] },
+    { na: 'ctime',    sk: 1, ip: 1, re: 0, vl: null,       ph: 'Date Created',    fx: 1,                       fa: 'clock-o'                                 },
+    { na: 'lcard',    sk: 1, ip: 1, re: 0, vl: null,       ph: 'LCard ID',        fx: 1,                       fc: 'L'                                       },
+    { na: 'id',       sk: 0, ip: 1, re: 1, vl: 'order',    ph: 'Order ID',        fx: 0,                       fa: 'key'                                     },
+    { na: 'name',     sk: 0, ip: 1, re: 1, vl: 'trim',     ph: 'Customer Name',   fx: 0,                       fa: 'user'                                    },
+    { na: 'passport', sk: 0, ip: 1, re: 1, vl: 'passport', ph: 'Passport ID',     fx: 0,                       fa: 'credit-card'                             },
+    { na: 'phone',    sk: 0, ip: 1, re: 1, vl: 'phone',    ph: 'Phone Number',    fx: 0,                       fa: 'phone'                                   },
+    { na: 'start',    sk: 0, ip: 1, re: 1, vl: 'date',     ph: 'Date Starting',   fx: ['shipping', 'Shipped'], fa: 'play'                                    },
+    { na: 'end',      sk: 0, ip: 1, re: 1, vl: 'date',     ph: 'Date Ending',     fx: ['shipping', 'Shipped'], fa: 'stop'                                    },
+    { na: 'region',   sk: 0, sl: 1, re: 1, vl: null,       ph: 'Select a Region', fx: ['shipping', 'Shipped'], fa: 'globe',      op: config.regions          },
+    { na: 'health',   sk: 0, sl: 1, re: 1, vl: null,       va: 'Normal',          fx: 0,                       fa: 'heartbeat',  op: ['Normal', 'Error']     },
+    { na: 'address',  sk: 0, ta: 1, re: 1, vl: 'trim',     ph: 'Address',         fx: ['shipping', 'Shipped']                                                },
+    { na: 'note',     sk: 0, ta: 1, re: 0, vl: 'trim',     ph: 'Note',            fx: 0                                                                      },
+    { na: 'category', sk: 0, sl: 1, re: 1, vl: null,       va: 'New',             fx: { state: 'insert' },     fa: 'diamond',    op: ['New', 'Legacy']       },
+    { na: 'shipping', sk: 0, sl: 1, re: 1, vl: null,       va: 'Pending',         fx: 0,                       fa: 'cube',       op: ['Pending', 'Shipped']  },
+    { na: 'carrier',  sk: 0, ip: 1, re: 1, vl: 'trim',     ph: 'Carrier',         fx: 0,                       fa: 'truck',      dp: ['shipping', 'Shipped'] },
+    { na: 'tracking', sk: 0, ip: 1, re: 1, vl: 'tracking', ph: 'Tracking ID',     fx: 0,                       fa: 'barcode',    dp: ['shipping', 'Shipped'] },
+    { na: 'bcard',    sk: 0, ip: 1, re: 1, vl: 'bcard',    ph: 'BCard ID',        fx: 0,                       fc: 'B',          dp: ['shipping', 'Shipped'] },
   ];
 
-  for (var i = 0, obj = {}; i < this.groups.length; i++) {
-    var group = this.groups[i];
+  var obj = {};
+  this.groups.forEach(function (group) {
     obj[group.na] = new ng.Control(group.va || '', group.vl ? validators[group.vl] : undefined);
     if (group.dp) {
       Object.defineProperty(group, 'hd', {
-        get: function() {
+        get: function () {
           return self.form.controls[group.dp[0]].value !== group.dp[1];
         }
       });
     }
-    if (this.groups.length - 1 === i) this.form = new ng.ControlGroup(obj);
-  }
+    Object.defineProperty(group, 'rd', {
+      get: function () {
+        if (group.fx instanceof Array) {
+          return self.form.controls[group.fx[0]].value === group.fx[1];
+        }
+        if (group.fx instanceof Object) {
+          var n = Object.getOwnPropertyNames(group.fx)[0];
+          return self[n] === group.fx[n];
+        }
+        return group.fx;
+      }
+    });
+  });
+  this.form = new ng.ControlGroup(obj);
 
   Object.defineProperty(bag.order, 'state', {
     set: function (value) {
@@ -141,7 +153,7 @@ OrderComponent.prototype.collect = function () {
   var data = {};
   for (var i = 0; i < this.groups.length; i++) {
     var group = this.groups[i];
-    if (group.rd) continue;
+    if (group.sk) continue;
     var value = this.form.controls[group.na].value;
     if (group.dp && this.form.controls[group.dp[0]].value !== group.dp[1]) {
       continue;
@@ -163,14 +175,14 @@ OrderComponent.prototype.insert = function (data) {
   this.socket.emit('insert', data);
   this.socket.on('inserted', function (data) {
     this.querying = false;
-    if (data.errors) {
+    if (data.error) {
       this.message.state = 'error';
-      this.message.text = data.first_error;
+      this.message.text = data.error;
     } else {
       this.fill(data);
       this.state = 'revise';
       this.message.state = 'success';
-      this.message.text = 'Successfully added an order on ' + new Date();
+      this.message.text = 'Successfully added an order on ' + (new Date()).toTimeString();
       this.snapshot = data;
     }
   }.bind(this));
