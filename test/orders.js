@@ -23,7 +23,7 @@ function clean() {
   });
 }
 
-describe('Test matching orders to lcards', function () {
+describe('Test orders to lcards matches', function () {
 
   beforeEach(clean);
   after(clean);
@@ -62,7 +62,7 @@ describe('Test matching orders to lcards', function () {
 
 });
 
-describe('Test binding orders to lcards', function () {
+describe('Test orders to lcards bindings', function () {
 
   beforeEach(clean);
   after(clean);
@@ -88,7 +88,7 @@ describe('Test binding orders to lcards', function () {
 
 });
 
-describe('Test unbounding orders to lcards', function () {
+describe('Test orders to lcards unbounds', function () {
 
   beforeEach(clean);
   after(clean);

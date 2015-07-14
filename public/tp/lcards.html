@@ -16,7 +16,7 @@
           </div>
           <div class="form-group">
             <select class="form-control" ng-control="region">
-              <option value="All">All Region</option>
+              <option value="">All Region</option>
               <option *ng-for="#c of regions" [value]="c">{{ c }}</option>
             </select>
           </div>
@@ -25,11 +25,11 @@
       </div>
     </div>
 
-    <div class="panel panel-default" id="upload">
+    <div class="panel panel-default" id="insert">
       <div class="panel-body">
-        <form [ng-form-model]="upload.form" (submit)="onUpload()">
+        <form [ng-form-model]="insert.form" (submit)="onInsert()">
           <div class="form-group">
-            <select class="form-control" ng-control="region" [(ng-model)]="upload.query.region" required>
+            <select class="form-control" ng-control="region" [(ng-model)]="insert.query.region" required>
               <option value="" disabled selected>Select a Region</option>
               <option *ng-for="#c of regions" [value]="c">{{ c }}</option>
             </select>
@@ -53,10 +53,10 @@
   <div class="panel panel-default" *ng-if="state === 'inserted'">
     <div class="panel-body">
       <span class="glyphicon glyphicon-saved" aria-hidden="true"></span>
-      <span>&nbspSuccessfully inserted <strong> {{ upload.info.inserted }} </strong> {{ upload.info.region }} cards.</span>
-      <br *ng-if="upload.info.errors">
-      <span *ng-if="upload.info.errors" class="glyphicon glyphicon-floppy-remove" aria-hidden="true"></span>
-      <span *ng-if="upload.info.errors">&nbspFailed inserted <strong> {{ upload.info.errors }} </strong> {{ upload.info.region }} cards.
+      <span>&nbspSuccessfully inserted {{ insert.info.inserted }} {{ insert.info.region }} cards.</span>
+      <br *ng-if="insert.info.errors">
+      <span *ng-if="insert.info.errors" class="glyphicon glyphicon-floppy-remove" aria-hidden="true"></span>
+      <span *ng-if="insert.info.errors">&nbspFailed inserted {{ insert.info.errors }} {{ insert.info.region }} cards.
       It may be caused by duplicated records.</span>
     </div>
   </div>
@@ -64,6 +64,13 @@
   <div class="panel panel-default" *ng-if="state === 'unmatch'">
     <div class="panel-body">
       <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+      <span>&nbspThe file name does not match the region you selected.</span>
+    </div>
+  </div>
+
+  <div class="panel panel-default" *ng-if="state === 'error'">
+    <div class="panel-body">
+      <span class="glyphicon glyphicon-danger-sign" aria-hidden="true"></span>
       <span>&nbspThe file name does not match the region you selected.</span>
     </div>
   </div>
@@ -81,19 +88,19 @@
     </div>
   </div>
 
-  <div class="panel panel-default" *ng-if="state === 'searching' || (state === 'searched' && search.results.length === 0)">
+  <div class="panel panel-default" *ng-if="state === 'error'">
     <div class="panel-body">
       <span>Currently no card is found.</span>
     </div>
   </div>
 
-  <div *ng-if="state === 'searched' && search.results.length > 0">
+  <div *ng-if="state === 'searched'">
     <table class="table table-hover table-bordered">
       <tr *ng-for="#result of search.results.slice(0, search.count - 1)" class="animated fadeIn">
         <td class="min-cell"><span class="icon glyphicon glyphicon-tag" aria-hidden="true"></span> {{ result.id }}</td>
         <td class="min-cell"><span class="icon glyphicon glyphicon-globe" aria-hidden="true"></span> {{ result.region }}</td>
         <td class="min-cell"><span class="icon glyphicon glyphicon-time" aria-hidden="true"></span> {{ result.ctime }}</td>
-        <td class="max-cell"><span class="icon glyphicon glyphicon-list-alt" aria-hidden="true"></span> {{ result.timeline.length }}</td>
+        <td class="max-cell"><span class="icon glyphicon glyphicon-list-alt" aria-hidden="true"></span> {{ result.bindings.length }}</td>
       </tr>
     </table>
     <ul class="pager">

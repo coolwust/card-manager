@@ -3,6 +3,24 @@
 var r = require('rethinkdb');
 var config = require('../config/db_connect.js');
 
+// fields:
+//   ctime: the order creation date
+//   lcard: the lcard id
+//   id:    the order id     
+//   name:    
+//   passport:
+//   phone:   
+//   start:   
+//   end:     
+//   region:  
+//   health:  
+//   address: 
+//   note:    
+//   category:
+//   shipping:
+//   carrier: 
+//   tracking:
+//   bcard:   
 exports.up = function(next) {
   r
     .connect(config)

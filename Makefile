@@ -1,10 +1,13 @@
 .PHONY : test
 
 test :
-	@./node_modules/migrate/bin/migrate up 1>/dev/null && \
+	@echo '' && \
+	./node_modules/migrate/bin/migrate up && \
 	./node_modules/mocha/bin/mocha --harmony --recursive --timeout=15000 \
+        test/lcards.js \
 	    test/orders.js && \
-	./node_modules/migrate/bin/migrate down 1>/dev/null
+	./node_modules/migrate/bin/migrate down && \
+	echo ''
 
 db-up :
 	@rethinkdb --config-file config/db_start.conf

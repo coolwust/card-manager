@@ -1,72 +1,118 @@
 'use strict';
 
-var expect = require('chai').expect;
-var lcards = require('../lib/lcards.js');
-var co = require('co');
-var r = require('rethinkdb');
-var connect = require('../lib/connect.js');
+var connect   = require('../lib/connect.js');
+var lcards    = require('../lib/lcards.js');
+var insert    = lcards.insert;
+var search    = lcards.search;
+var timestamp = lcards.timestamp;
+var expect    = require('chai').expect;
+var co        = require('co');
+var r         = require('rethinkdb');
 
-//describe('testing card query', function () {
-//
-//  beforeEach(function (done) {
-//    co(function* () {
-//      var conn = yield connect();
-//      yield r.tableDrop('lcard').run(conn);
-//      yield r.tableCreate('lcard').run(conn);
-//      yield r.table('lcard').indexCreate('ctime').run(conn);
-//      var records = [
-//        { id: 12, region: 'europe', ctime: r.time(2016, 1, 1, '+08:00') },
-//        { id: 23, region: 'europe', ctime: r.time(2016, 2, 1, '+08:00') },
-//        { id: 34, region: 'usa', ctime: r.time(2016, 3, 1, '+08:00') },
-//        { id: 45, region: 'usa', ctime: r.time(2016, 4, 1, '+08:00') },
-//        { id: 56, region: 'usa', ctime: r.time(2016, 4, 1, '+08:00') }
-//      ];
-//      yield r.table('lcard').insert(records).run(conn);
-//    }).then(done, done);
-//  });
-//
-//  it('find all cards', function (done) {
-//    co(function* () {
-//      var data = { page: 1, region: 'all' };
-//      var cursor = yield lcards.search(data);
-//      var result = yield cursor.toArray();
-//      expect(result).to.have.length(5);
-//    }).then(done, done);
-//  });
-//
-//  it('find cards filtered by id', function (done) {
-//    co(function* () {
-//      var data = { page: 1, region: 'all', id: '3' };
-//      var cursor = yield lcards.search(data);
-//      var result = yield cursor.toArray();
-//      expect(result).to.have.length(2);
-//    }).then(done, done);
-//  });
-//
-//  it('find cards filtered by region', function (done) {
-//    co(function* () {
-//      var data = { page: 1, region: 'usa' };
-//      var cursor = yield lcards.search(data);
-//      var result = yield cursor.toArray();
-//      expect(result).to.have.length(3);
-//    }).then(done, done);
-//  });
-//
-//  it('find cards filtered by date', function (done) {
-//    co(function* () {
-//      var data = { page: 1, region: 'all', date: { year: 2016, month: 4, day: 1 } };
-//      var cursor = yield lcards.search(data);
-//      var result = yield cursor.toArray();
-//      expect(result).to.have.length(2);
-//    }).then(done, done);
-//  });
-//
-//  it('find cards filtered by multiple constraints', function (done) {
-//    co(function* () {
-//      var data = { page: 1, id: '5', region: 'usa', date: { year: 2016, month: 4, day: 1 } };
-//      var cursor = yield lcards.search(data);
-//      var result = yield cursor.toArray();
-//      expect(result).to.have.length(2);
-//    }).then(done, done);
-//  });
-//});
+function clean() {
+  return co(function* () {
+    var conn = yield connect();
+    yield r.table('lcard').delete().run(conn);
+  });
+}
+
+describe('Test lcards insertions', function () {
+
+  beforeEach(clean);
+  after(clean);
+
+  it('Insert lcards', function () {
+    var conn, lcards;
+    return co(function* () {
+      yield insert('123\n\n\r\n456\n\r', 'America');
+      conn = yield connect();
+      lcards = yield r.table('lcard').run(conn);
+      lcards = yield lcards.toArray();
+      expect(lcards.length).to.equal(2);
+      expect(lcards[0].id).to.equal('123');
+      expect(lcards[0].region).to.equal('America');
+      expect(lcards[0].orders).is.an('Object');
+      expect(lcards[0].bindings).is.an('Array');
+    });
+  });
+
+});
+
+describe('Test lcards searching', function () {
+
+  beforeEach(clean);
+  after(clean);
+
+  it('Search lcards by no filters', function (done) {
+    var conn, lcards, cursor, i = 0;
+    co(function* () {
+      yield insert('123\n456', 'America');
+      yield insert('234\n567', 'Europe');
+      conn = yield connect();
+      return yield search(null, null, null, 1, 20);
+    }).then(function (cursor) {
+      cursor.on('data', function (lcard) {
+        if (++i === 4) {
+          cursor.close();
+          done();
+        }
+      });
+      cursor.on('error', done);
+    }, done);;
+  });
+
+  it('Search lcards by id', function (done) {
+    var conn, lcards, cursor;
+    co(function* () {
+      yield insert('123\n456', 'America');
+      conn = yield connect();
+      return yield search('123', null, null, 1, 20);
+    }).then(function (cursor) {
+      cursor.on('data', function (lcard) {
+        expect(lcard.new_val.id).to.equal('123');
+        cursor.close();
+        done();
+      });
+      cursor.on('error', done);
+    }, done);;
+  });
+
+  it('Search lcards by region', function (done) {
+    var conn, lcards, cursor, i = 0;
+    co(function* () {
+      yield insert('123\n456', 'America');
+      yield insert('234\n567', 'Europe');
+      conn = yield connect();
+      return yield search(null, null, 'Europe', 1, 20);
+    }).then(function (cursor) {
+      cursor.on('data', function (lcard) {
+        expect(lcard.new_val.id).to.be.within('234', '567');
+        if (++i === 2) {
+          cursor.close();
+          done();
+        }
+      });
+      cursor.on('error', done);
+    }, done);;
+  });
+
+  it('Search lcards by ctime', function (done) {
+    var conn, lcards, update, cursor, i = 0;
+    co(function* () {
+      yield insert('123\n456', 'America');
+      yield insert('234\n567', 'Europe');
+      conn = yield connect();
+      update = {ctime: r.epochTime(timestamp('2015.07.07'))};
+      yield r.table('lcard').get('234').update(update).run(conn);
+      return yield search(null, timestamp('2015.07.07'), null, 1, 20);
+    }).then(function (cursor) {
+      cursor.on('data', function (lcard) {
+        expect(lcard.new_val.id).to.equal('234');
+        cursor.close();
+        done();
+      });
+      cursor.on('error', done);
+    }, done);;
+  });
+
+});
