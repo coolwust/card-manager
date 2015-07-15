@@ -43,8 +43,14 @@
   top: 2px;
 }
 
-#filter {
-  margin-bottom: 10px;
+#search-info {
+  margin: 0 0 15px 0;
   width: 100%;
-  padding: 10px;
 }
+
+#search-info span {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-right: 3px;
+}
+

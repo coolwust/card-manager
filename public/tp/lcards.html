@@ -5,7 +5,7 @@
   <div>
     <div class="panel panel-default" id="search">
       <div class="panel-body">
-        <form [ng-form-model]="search.form" (submit)="onFetch('search')">
+        <form [ng-form-model]="search.form" (submit)="onSearch()">
           <div class="form-group has-feedback">
             <input type="text" class="form-control" placeholder="Card ID" ng-control="id">
             <i class="fa fa-exclamation-triangle form-control-feedback" *ng-if="!search.form.controls.id.valid"></i>
@@ -44,68 +44,52 @@
 
   <div class="container"></div>
 
-  <div id="filter" class="panel panel-default" *ng-if="state === 'searched'">
-    <span class="label label-success">filter: {{ search.filter }}</span>
-    <span class="label label-success">order by: date added</span>
-    <span class="label label-success">page: {{ search.page }}</span>
-  </div>
-
-  <div class="panel panel-default" *ng-if="state === 'inserted'">
-    <div class="panel-body">
+  <div class="panel panel-default" *ng-if="state !== 'searched'">
+    <div class="panel-body" *ng-if="state === 'inserted'">
       <span class="glyphicon glyphicon-saved" aria-hidden="true"></span>
-      <span>&nbspSuccessfully inserted {{ insert.info.inserted }} {{ insert.info.region }} cards.</span>
+      <span>&nbspSuccessfully inserted {{ insert.info.inserted }} {{ insert.info.region.toLowerCase() }} cards.</span>
       <br *ng-if="insert.info.errors">
       <span *ng-if="insert.info.errors" class="glyphicon glyphicon-floppy-remove" aria-hidden="true"></span>
       <span *ng-if="insert.info.errors">&nbspFailed inserted {{ insert.info.errors }} {{ insert.info.region }} cards.
       It may be caused by duplicated records.</span>
     </div>
-  </div>
-
-  <div class="panel panel-default" *ng-if="state === 'unmatch'">
-    <div class="panel-body">
+    <div class="panel-body" *ng-if="state === 'unmatch'">
       <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
       <span>&nbspThe file name does not match the region you selected.</span>
     </div>
-  </div>
-
-  <div class="panel panel-default" *ng-if="state === 'error'">
-    <div class="panel-body">
-      <span class="glyphicon glyphicon-danger-sign" aria-hidden="true"></span>
-      <span>&nbspThe file name does not match the region you selected.</span>
-    </div>
-  </div>
-
-  <div class="panel panel-default" *ng-if="state === 'standby'">
-    <div class="panel-body">
+    <div class="panel-body" *ng-if="state === 'standby'">
       <span>Please standby ...</span>
     </div>
-  </div>
-
-  <div class="panel panel-default" *ng-if="state === 'malformed'">
-    <div class="panel-body">
+    <div class="panel-body" *ng-if="state === 'malformed'">
       <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
       <span>&nbspThe file you uploaded is malformed.</span>
     </div>
-  </div>
-
-  <div class="panel panel-default" *ng-if="state === 'error'">
-    <div class="panel-body">
-      <span>Currently no card is found.</span>
+    <div class="panel-body" *ng-if="state === 'failed'">
+      <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+      <span>&nbsp{{ message }}</span>
     </div>
   </div>
 
   <div *ng-if="state === 'searched'">
+    <div id="search-info">
+      <span class="well well-sm">{{ search.total }} results</span>
+      <span class="well well-sm">{{ search.count }} results per page</span>
+      <span class="well well-sm">page {{ search.page }}</span>
+      <span class="well well-sm">order by date added</span>
+      <span class="well well-sm" *ng-if="search.filter"> {{ search.filter }}</span>
+    </div>
     <table class="table table-hover table-bordered">
       <tr *ng-for="#result of search.results.slice(0, search.count - 1)" class="animated fadeIn">
         <td class="min-cell"><span class="icon glyphicon glyphicon-tag" aria-hidden="true"></span> {{ result.id }}</td>
+        <td class="min-cell"><span class="icon glyphicon glyphicon-copy" aria-hidden="true"></span> {{ result.ctime }}</td>
         <td class="min-cell"><span class="icon glyphicon glyphicon-globe" aria-hidden="true"></span> {{ result.region }}</td>
-        <td class="min-cell"><span class="icon glyphicon glyphicon-time" aria-hidden="true"></span> {{ result.ctime }}</td>
+        <td class="min-cell"><span class="icon glyphicon glyphicon-hourglass" aria-hidden="true"></span> {{ result.free }}</td>
         <td class="max-cell"><span class="icon glyphicon glyphicon-list-alt" aria-hidden="true"></span> {{ result.bindings.length }}</td>
       </tr>
     </table>
     <ul class="pager">
-      <li class="previous" [class.disabled]="search.page === 1"><a href="#" (click)="onFetch('newer')"><span aria-hidden="true">&larr;</span> Newer</a></li>
-      <li class="next" [class.disabled]="search.results.length <= search.count"><a href="#" (click)="onFetch('older')">Older <span aria-hidden="true">&rarr;</span></a></li>
+      <li class="previous" [class.disabled]="search.page === 1"><a href="#" (click)="onSearch('newer')"><span aria-hidden="true">&larr;</span> Newer</a></li>
+      <li class="next" [class.disabled]="search.results.length <= search.count"><a href="#" (click)="onSearch('older')">Older <span aria-hidden="true">&rarr;</span></a></li>
     </ul>
   </div>
 

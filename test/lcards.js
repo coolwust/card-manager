@@ -106,6 +106,7 @@ describe('Test lcards searching', function () {
       yield r.table('lcard').get('234').update(update).run(conn);
       return yield search(null, timestamp('2015.07.07'), null, 1, 20);
     }).then(function (cursor) {
+      expect(cursor.total).to.equal(1);
       cursor.on('data', function (lcard) {
         expect(lcard.new_val.id).to.equal('234');
         cursor.close();
