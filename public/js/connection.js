@@ -1,31 +1,29 @@
 'use strict';
 
 function ConnectionComponent(bag) {
+  this.dots = '';
   var socket = io(config.host + ':' + config.port);
   var num;
-  var dots;
-  var i = 0;
-  window.setInterval(function () {
-    if (++i === 4) i = 0;
-    if (i === 0) dots = '';
-    if (i === 1) dots = '.';
-    if (i === 2) dots = '..';
-    if (i === 3) dots = '...';
-  }, 450);
   Object.defineProperty(this, 'message', {
     get: function () {
       var message = 'The connection to the server has been lost. The server is ';
-      message += 'not found or may be down. Trying to reconnect (' + num + ') ' + dots;
+      message += 'not found or may be down. Trying to reconnect #' + num + ' ' + this.dots;
       return message;
     }
   });
   this.status = 'connected';
+  var id = null;
   socket.on('connect', function () {
+    if (id !== null) {
+      window.clearInterval(id);
+      id = null;
+    }
     this.status = 'connected';
     window.onwheel = null;
     document.body.style.overflow = 'visible';
   }.bind(this));
   socket.on('reconnecting', function (count) {
+    if (id === null) id = this.runDots();
     num = count;
     this.status = 'reconnecting';
     document.body.style.overflow = 'hidden';
@@ -45,3 +43,15 @@ ConnectionComponent.annotations = [
 
 ConnectionComponent.parameters = [
 ];
+
+ConnectionComponent.prototype.runDots = function () {
+  var i = 0;
+  return window.setInterval(function () {
+    console.log('hehe');
+    if (++i === 4) i = 0;
+    if (i === 0) this.dots = '';
+    if (i === 1) this.dots = '.';
+    if (i === 2) this.dots = '..';
+    if (i === 3) this.dots = '...';
+  }.bind(this), 450);
+}
