@@ -38,5 +38,6 @@ var server = http.createServer(app.callback());
 var io = new IO(server);
 lcards.listen(io);
 orders.listen(io);
+session.listen(io);
 
 server.listen(3000);

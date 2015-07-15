@@ -5,17 +5,14 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function LCardsComponent(bag, search, insert) {
-
-  this.socket = io(config.host + ':' + config.port + '/lcards');
+  if (!bag.sockets.lcards) bag.sockets.lcards = io(config.host + ':' + config.port + '/lcards');
+  bag.navigation.location = 'lcards';
+  this.sockets = bag.sockets;
   this.regions = config.regions;
   this.state = null;
   this.message = '';
   this.insert = insert;
   this.search = search;
-
-  bag.navigation.location = 'lcards';
-  bag.navigation.socket = this.socket;
-
   this.onSearch();
 }
 
@@ -26,7 +23,7 @@ LCardsComponent.annotations = [
   }),
   new ng.ViewAnnotation({
     templateUrl: '../tp/lcards.html',
-    directives: [ng.formDirectives, ng.NgFor, ng.NgIf, NavigationComponent]
+    directives: [ng.formDirectives, ng.NgFor, ng.NgIf, ConnectionComponent, NavigationComponent]
   })
 ];
 
@@ -79,9 +76,9 @@ LCardsComponent.prototype.onSearch = function (action) {
   this.search.snapshot = data;
   this.state = 'standby';
   this.search.results = [];
-  this.socket.removeAllListeners();
-  this.socket.emit('search', data);
-  this.socket.on('searched', function (data) {
+  this.sockets.lcards.removeAllListeners();
+  this.sockets.lcards.emit('search', data);
+  this.sockets.lcards.on('searched', function (data) {
     this.state = 'searched';
     this.search.total = data.total;
     function findIndex(id, results) {
@@ -102,12 +99,12 @@ LCardsComponent.prototype.onSearch = function (action) {
       this.search.results.splice(key, 1);
     }
   }.bind(this));
-  this.socket.on('reconnect', function () {
+  this.sockets.lcards.on('reconnect', function () {
     this.state = 'standby';
     this.search.results = [];
-    this.socket.emit('search', data);
+    this.sockets.lcards.emit('search', data);
   }.bind(this));
-  this.socket.on('failed', function (message) {
+  this.sockets.lcards.on('failed', function (message) {
     this.state = 'failed';
     this.message = message;
   }.bind(this));
@@ -135,19 +132,19 @@ LCardsComponent.prototype.onInsert = function () {
   if (fileRegion.toUpperCase() !== queryRegion.toUpperCase()) {
     return this.state = 'unmatch';
   }
-  this.socket.removeAllListeners();
+  this.sockets.lcards.removeAllListeners();
   reader = new FileReader();
   reader.onload = function ($event) {
     if (/[^A-Za-z0-9\r\n_-]/.test($event.target.result) === true) {
       return this.state = 'malformed';
     }
-    this.socket.emit('insert', { 
+    this.sockets.lcards.emit('insert', { 
       region: this.insert.query.region, 
       contents: $event.target.result 
     });
   }.bind(this);
   reader.readAsText(this.insert.query.file, 'UTF-8');
-  this.socket.on('inserted', function (info) {
+  this.sockets.lcards.on('inserted', function (info) {
     this.state = 'inserted';
     this.insert.info = info;
     this.insert.info.region = queryRegion;

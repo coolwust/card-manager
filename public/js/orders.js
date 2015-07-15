@@ -33,7 +33,7 @@ OrdersComponent.annotations = [
     templateUrl: '../tp/orders.html',
     directives: [
       ng.NgFor, ng.NgIf, ng.CSSClass, ng.formDirectives, 
-      NavigationComponent, OrderComponent]
+      ConnectionComponent, NavigationComponent, OrderComponent]
   })
 ];
 

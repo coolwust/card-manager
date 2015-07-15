@@ -23,3 +23,6 @@ select, input {
   text-overflow: '';
 }
 
+html, body {
+  height: 100% !important;
+}
