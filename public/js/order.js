@@ -1,20 +1,17 @@
 'use strict';
 
 function OrderComponent(bag) {
-
-  var self = this;
-
-  this.state = null;
+  var self = this, obj = {};
   this.socket = bag.socket;
-  this.query = false;
+  this.state = null;
   this.message = { state: null, text: ''};
   this.querying = false;
-  this.snapshot = null;
-
+  this.deleting = false;
+  this.id = null;
   this.groups = [
     { na: 'ctime',    sk: 1, ip: 1, re: 0, vl: null,       ph: 'Date Created',    fx: 1,                       fa: 'clock-o'                                 },
     { na: 'lcard',    sk: 1, ip: 1, re: 0, vl: null,       ph: 'LCard ID',        fx: 1,                       fc: 'L'                                       },
-    { na: 'id',       sk: 0, ip: 1, re: 1, vl: 'order',    ph: 'Order ID',        fx: 0,                       fa: 'key'                                     },
+    { na: 'id',       sk: 0, ip: 1, re: 1, vl: 'order',    ph: 'Order ID',        fx: { state: 'insert' },     fa: 'key'                                     },
     { na: 'name',     sk: 0, ip: 1, re: 1, vl: 'trim',     ph: 'Customer Name',   fx: 0,                       fa: 'user'                                    },
     { na: 'passport', sk: 0, ip: 1, re: 1, vl: 'passport', ph: 'Passport ID',     fx: 0,                       fa: 'credit-card'                             },
     { na: 'phone',    sk: 0, ip: 1, re: 1, vl: 'phone',    ph: 'Phone Number',    fx: 0,                       fa: 'phone'                                   },
@@ -24,14 +21,12 @@ function OrderComponent(bag) {
     { na: 'health',   sk: 0, sl: 1, re: 1, vl: null,       va: 'Normal',          fx: 0,                       fa: 'heartbeat',  op: ['Normal', 'Error']     },
     { na: 'address',  sk: 0, ta: 1, re: 1, vl: 'trim',     ph: 'Address',         fx: ['shipping', 'Shipped']                                                },
     { na: 'note',     sk: 0, ta: 1, re: 0, vl: 'trim',     ph: 'Note',            fx: 0                                                                      },
-    { na: 'category', sk: 0, sl: 1, re: 1, vl: null,       va: 'New',             fx: { state: 'insert' },     fa: 'diamond',    op: ['New', 'Legacy']       },
+    { na: 'category', sk: 0, sl: 1, re: 1, vl: null,       va: 'New',             fx: { state: 'update' },     fa: 'diamond',    op: ['New', 'Legacy']       },
     { na: 'shipping', sk: 0, sl: 1, re: 1, vl: null,       va: 'Pending',         fx: 0,                       fa: 'cube',       op: ['Pending', 'Shipped']  },
     { na: 'carrier',  sk: 0, ip: 1, re: 1, vl: 'trim',     ph: 'Carrier',         fx: 0,                       fa: 'truck',      dp: ['shipping', 'Shipped'] },
     { na: 'tracking', sk: 0, ip: 1, re: 1, vl: 'tracking', ph: 'Tracking ID',     fx: 0,                       fa: 'barcode',    dp: ['shipping', 'Shipped'] },
     { na: 'bcard',    sk: 0, ip: 1, re: 1, vl: 'bcard',    ph: 'BCard ID',        fx: 0,                       fc: 'B',          dp: ['shipping', 'Shipped'] },
   ];
-
-  var obj = {};
   this.groups.forEach(function (group) {
     obj[group.na] = new ng.Control(group.va || '', group.vl ? validators[group.vl] : undefined);
     if (group.dp) {
@@ -48,14 +43,13 @@ function OrderComponent(bag) {
         }
         if (group.fx instanceof Object) {
           var n = Object.getOwnPropertyNames(group.fx)[0];
-          return self[n] === group.fx[n];
+          return self[n] !== group.fx[n];
         }
         return group.fx;
       }
     });
   });
   this.form = new ng.ControlGroup(obj);
-
   Object.defineProperty(bag.order, 'state', {
     set: function (value) {
       if (value === 'insert') {
@@ -64,14 +58,12 @@ function OrderComponent(bag) {
         self.state = 'wait';
         self.socket.emit('get', { id: '123' });
         self.socket.on('got', function (data) {
-          self.snapshot = data;
           self.state = 'update';
           self.fill(data);
         });
       }
     }
   });
-
   Object.defineProperty(this, 'title', {
     get: function () {
       switch (self.state) {
@@ -106,40 +98,44 @@ OrderComponent.parameters = [
 ];
 
 OrderComponent.prototype.onClose = function () {
-  var form = document.getElementById('order-form');
-  if (form) form.reset();
   this.reset();
-  this.message = {};
   this.state = null;
-  this.snapshot = null;
 }
 
 OrderComponent.prototype.onSubmit = function () {
   var data = this.collect();
-  if (!data) return;
+  if (typeof data !== 'object') return;
+  this.querying = true;
+  this.message = {};
   switch (this.state) {
     case 'insert':
       this.insert(data);
       break;
+    case 'revise':
+    case 'update':
       this.update(data);
-    default:
       break;
   }
 }
 
+OrderComponent.prototype.onDelete = function () {
+  this.deleting = true;
+  this.delete();
+}
+
 OrderComponent.prototype.onAnother = function () {
-  var form = document.getElementById('order-form');
-  if (form) form.reset();
   this.reset();
   this.state = 'insert';
-  this.message = {};
-  this.snapshot = null;
 }
 
 OrderComponent.prototype.reset = function () {
+  var form = document.getElementById('order-form');
+  if (form) form.reset();
   for (var i = 0; i < this.groups.length; i++) {
     this.form.controls[this.groups[i].na].updateValue(this.groups[i].va || '');
   }
+  this.message = {};
+  this.id = null;
 }
 
 OrderComponent.prototype.fill = function (data) {
@@ -150,6 +146,7 @@ OrderComponent.prototype.fill = function (data) {
 }
 
 OrderComponent.prototype.collect = function () {
+  if (this.form.valid === false) return;
   var data = {};
   for (var i = 0; i < this.groups.length; i++) {
     var group = this.groups[i];
@@ -170,8 +167,6 @@ OrderComponent.prototype.collect = function () {
 }
 
 OrderComponent.prototype.insert = function (data) {
-  this.querying = true;
-  this.message = {};
   this.socket.emit('insert', data);
   this.socket.on('inserted', function (data) {
     this.querying = false;
@@ -183,25 +178,46 @@ OrderComponent.prototype.insert = function (data) {
       this.state = 'revise';
       this.message.state = 'success';
       this.message.text = 'Successfully added an order on ' + (new Date()).toTimeString();
-      this.snapshot = data;
+      this.id = data.id;
     }
   }.bind(this));
 }
 
 OrderComponent.prototype.update = function (data) {
-  this.querying = true;
-  this.message = {};
-  this.socket.emit('update', data);
+  this.socket.emit('update', this.id, data);
   this.socket.on('updated', function (data) {
     this.querying = false;
-    switch (this.state) {
-      case 'revise':
-        this.message.text = 'Revised on ' + new Date();
-        this.message.state = 'success';
-        break;
-      case 'update':
-        this.message.text = 'Updated on ' + new Date();
-        this.message.state = 'success';
+    if (data.error) {
+      this.message.state = 'error';
+      this.message.text = data.error;
+    } else {
+      this.fill(data);
+      this.message.state = 'success';
+      switch (this.state) {
+        case 'revise':
+          this.message.text = 'Successfully revised on ' + new Date().toTimeString();
+          break;
+        case 'update':
+          this.message.text = 'Successfully updated on ' + new Date().toTimeString();
+          break;
+      }
+      this.id = data.id;
+    }
+  }.bind(this));
+}
+
+OrderComponent.prototype.delete = function () {
+  this.socket.emit('delete', this.id);
+  this.socket.on('deleted', function (data) {
+    if (data.error) {
+      this.message.state = 'error';
+      this.message.text = data.error;
+    } else {
+      this.deleting = false;
+      this.reset();
+      this.state = 'insert';
+      this.message.state = 'success';
+      this.message.text = 'Successfully delete the order ' + data.orderId + ' on ' + new Date().toTimeString();
     }
   }.bind(this));
 }
