@@ -27,10 +27,3 @@
   width: 554px;
   resize: none;
 }
-
-#order .input-group-addon {
-  border-radius: 4px 0 0 4px !important;
-  width: 36px !important;
-  padding: 2px !important;
-  border-right: 0;
-}

@@ -1,108 +1,80 @@
 <connection></connection>
+<order class="modal fade" id="order" tabindex="-1" role="dialog"></order>
 <navigation></navigation>
 <main class="container">
-  <div class="panel panel-default" id="panel-left">
+  <div class="panel panel-default" id="search">
     <div class="panel-body">
-      <form>
-        <div class="input-group" id="filter-bar">
+      <form [ng-form-model]="search.form" (submit)="onSearch()">
+
+        <div class="input-group has-feedback">
           <div class="input-group-btn">
-            <button type="button" 
-                    class="btn btn-default dropdown-toggle" 
-                    data-toggle="dropdown" 
-                    aria-haspopup="true" 
-                    aria-expanded="false">
-              {{ inputBar.filter }} <span class="caret"></span>
-            </button>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> {{ search.trackings.bar.se }} <span class="caret"></span></button>
             <ul class="dropdown-menu">
-              <li *ng-for="#filter of inputBar.filters" >
-                <a href="#" (click)="onSelectInputBarFilter(filter)">{{ filter }}</a>
-              </li>
+              <li *ng-for="#bar of search.groups.bars; #i = index"><a href="#" (click)="onBarSwitch(i)">{{ bar.se }}</a></li>
             </ul>
           </div>
-          <div class="form-group" [class.has-success]="inputBar.valid && inputBar.init" 
-               [class.has-error]="!inputBar.valid && inputBar.init" 
-               [class.has-feedback]="inputBar.valid">
-            <input type="text" id="filter-bar-input" class="form-control" 
-                   [placeholder]="inputBar.placeholder" 
-                   [disabled]="inputBar.disabled" (keyup)="onInputBarKeyUp($event)">
-            <span class="glyphicon form-control-feedback" aria-hidden="true" 
-                  *ng-if="inputBar.init" 
-                  [class.glyphicon-ok]="inputBar.valid && inputBar.init" 
-                  [class.glyphicon-remove]="!inputBar.valid && inputBar.init">
-            </span>
-          </div>
+          <input type="text" id="search-bar" class="form-control" [disabled]="search.trackings.bar.di" [placeholder]="search.trackings.bar.pl" ng-control="bar">
+          <i class="fa form-control-feedback" *ng-if="!search.trackings.bar.di && search.form.controls.bar.value === ''"><span>*<span></i>
+          <i class="fa fa-exclamation-triangle form-control-feedback" *ng-if="!search.valid"></i>
         </div>
 
-        <div class="btn-group filter-element" role="group">
-          <button *ng-for="#value of btnActive.values" 
-                  type="button" class="btn btn-default" 
-                  [class.left-button]="value === 'Active'"
-                  [class.active]="btnActive.value === value" 
-                  (mouseup)="onBtnActiveMouseUp(value)">
-            {{ value }}
-          </button>
+        <div class="btn-group" data-toggle="buttons" *ng-for="#combination of search.groups.combinations">
+          <label *ng-for="#bt of combination.bs; #i = index" class="btn btn-default" [class.left-btn]="i === 0" [class.active]="i === 0" (mouseup)="onCombinationSwitch(combination.na, bt)">
+            <input type="radio" [name]="combination.na" autocomplete="off" [checked]="i === 0">{{ bt === '' ? 'All' : bt }}
+          </label>
         </div>
 
-        <div class="btn-group filter-element" role="group">
-          <button *ng-for="#value of btnShip.values" type="button" 
-                  class="btn btn-default" 
-                  [class.left-button]="value === 'All'"
-                  [class.active]="btnShip.value === value" 
-                  (mouseup)="onBtnShipMouseUp(value)">
-            {{ value }}
-          </button>
-        </div>
-
-        <div class="btn-group filter-element" role="group">
-          <button *ng-for="#value of btnError.values" 
-                  type="button" class="btn btn-default" 
-                  [class.left-button]="value === 'All'"
-                  [class.active]="btnError.value === value" 
-                  (mouseup)="onBtnErrorMouseUp(value)">
-            {{ value }}
-          </button>
-        </div>
-
-        <button type="submit" class="btn btn-primary" id="search-button" (mouseup)="onBtnSearchMouseUp()">Search</button>
+        <button type="submit" class="btn btn-primary pull-right">Search</button>
       </form>
     </div>
   </div>
 
-  <div class="panel panel-default" id="panel-new">
-    <a href="#" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#order" (click)="onOrderInsert()">
-    <!--<a href="#" (click)="onOrderInsert()">-->
-      <i class="fa fa-plus" (click)="onOrderInsert()"></i>
+  <div class="panel panel-default" id="insert">
+    <a href="#" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#order" (click)="onInsert()">
+      <i class="fa fa-plus" (click)="onInsert()"></i>
     </a>
   </div>
 
   <div class="container"></div>
 
-
-
-
-
-
-
-  <div id="orders-list">
-    <section class="list-element animated fadeIn">
-      <table>
-        <tr><td class="list-element-title"><strong>Order</strong></td> <td><a href="#">13074107347130471</a></td></tr>
-        <tr><td class="list-element-title"><strong>Name</strong></td><td>王香寒</td></tr>
-        <tr><td class="list-element-title"><strong>Phone</strong></td><td>13905200000</td></tr>
-        <tr><td class="list-element-title"><strong>Date</strong></td><td>2015.06.30 - 2015.07.15</td></tr>
-        <tr><td class="list-element-title"><strong>B-Card</strong></td><td>17834701734712034174</td></tr>
-        <tr><td class="list-element-title"><strong>L-Card</strong></td><td>757095273745724750925</td></tr>
-        <tr><td class="list-element-title"><strong>UPS</strong></td><td>1Z5A806V0395121279</td></tr>
-      </table>
-    </section>
+  <div class="panel panel-default" *ng-if="state !== 'searched'">
+    <div class="panel-body" *ng-if="state === 'standby'">
+      <span>Please standby ...</span>
+    </div>
+    <div class="panel-body" *ng-if="state === 'failed'">
+      <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+      <span>&nbsp{{ message }}</span>
+    </div>
   </div>
-  <div>
-    <ul class="pager" id="filter-nav">
-      <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> New</a></li>
-      <li class="next disabled"><a href="#">Old <span aria-hidden="true">&rarr;</span></a></li>
-    </ul>
+
+  <div *ng-if="state === 'searched'">
+    <div id="search-info">
+      <span class="well well-sm">{{ search.total }} results</span>
+      <span class="well well-sm">{{ search.count }} results per page</span>
+      <span class="well well-sm">page {{ search.page }}</span>
+      <span class="well well-sm">order by date added</span>
+      <span class="well well-sm">{{ search.filter }}</span>
+    </div>
+    <div id="orders-list">
+      <section class="list-element animated fadeIn">
+        <table>
+          <tr><td class="list-element-title"><strong>Order</strong></td> <td><a href="#">13074107347130471</a></td></tr>
+          <tr><td class="list-element-title"><strong>Name</strong></td><td>王香寒</td></tr>
+          <tr><td class="list-element-title"><strong>Phone</strong></td><td>13905200000</td></tr>
+          <tr><td class="list-element-title"><strong>Date</strong></td><td>2015.06.30 - 2015.07.15</td></tr>
+          <tr><td class="list-element-title"><strong>BCard</strong></td><td>17834701734712034174</td></tr>
+          <tr><td class="list-element-title"><strong>LCard</strong></td><td>757095273745724750925</td></tr>
+          <tr><td class="list-element-title"><strong>UPS</strong></td><td>1Z5A806V0395121279</td></tr>
+        </table>
+      </section>
+    </div>
+    <div>
+      <ul class="pager" id="filter-nav">
+        <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> New</a></li>
+        <li class="next disabled"><a href="#">Old <span aria-hidden="true">&rarr;</span></a></li>
+      </ul>
+    </div>
   </div>
 
 </main>
 
-<order class="modal fade" id="order" tabindex="-1" role="dialog"></order>

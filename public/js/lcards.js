@@ -4,6 +4,37 @@ document.addEventListener('DOMContentLoaded', function () {
   ng.bootstrap(LCardsComponent);
 });
 
+function LCardsSearch() {
+  return {
+    form: new ng.ControlGroup({
+      id:     new ng.Control('', validators.lcard),
+      ctime:  new ng.Control('', validators.date),
+      region: new ng.Control('')
+    }),
+    page: 1, 
+    snapshot: {region: '', id: '', ctime: ''},
+    count: 20, 
+    results: [],
+    get filter() {
+      var filter = '';
+      filter += this.snapshot.region ? ', region=' + this.snapshot.region : '';
+      filter += this.snapshot.id ? ', id=' + this.snapshot.id : '';
+      filter += this.snapshot.ctime ? ', date=' + this.snapshot.ctime : '';
+      return filter ? filter.substr(1).toLowerCase() : '';
+    }
+  };
+}
+
+function LCardsInsert() {
+  return {
+    form: new ng.ControlGroup({
+      region: new ng.Control('')
+    }),
+    query: { file: null, region: '' }, 
+    info: {}
+  };
+}
+
 function LCardsComponent(bag, search, insert) {
   if (!bag.sockets.lcards) bag.sockets.lcards = io(config.host + ':' + config.port + '/lcards');
   bag.navigation.location = 'lcards';
@@ -30,27 +61,6 @@ LCardsComponent.annotations = [
 LCardsComponent.parameters = [
   [Bag], [LCardsSearch], [LCardsInsert]
 ];
-
-function LCardsSearch() {
-  return {
-    form: new ng.ControlGroup({
-      id:     new ng.Control('', validators.lcard),
-      ctime:  new ng.Control('', validators.date),
-      region: new ng.Control('')
-    }),
-    page: 1, 
-    snapshot: {region: '', id: '', ctime: ''},
-    count: 20, 
-    results: [],
-    get filter() {
-      var filter = '';
-      filter += this.snapshot.region ? ', region=' + this.snapshot.region : '';
-      filter += this.snapshot.id ? ', id=' + this.snapshot.id : '';
-      filter += this.snapshot.ctime ? ', date=' + this.snapshot.ctime : '';
-      return filter ? filter.substr(1).toLowerCase() : '';
-    }
-  };
-}
 
 LCardsComponent.prototype.onSearch = function (action) {
   var data = {
@@ -108,16 +118,6 @@ LCardsComponent.prototype.onSearch = function (action) {
     this.state = 'failed';
     this.message = message;
   }.bind(this));
-}
-
-function LCardsInsert() {
-  return {
-    form: new ng.ControlGroup({
-      region: new ng.Control('')
-    }),
-    query: { file: null, region: '' }, 
-    info: {}
-  };
 }
 
 LCardsComponent.prototype.onScan = function ($event) {
