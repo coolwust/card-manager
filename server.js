@@ -1,23 +1,24 @@
 'use strict';
 
-var koa = require('koa');
-var serve = require('koa-static');
+var koa      = require('koa');
+var serve    = require('koa-static');
 var compress = require('koa-compress');
-var co = require('co');
-var marko = require('marko');
-var http = require('http');
-var IO = require('socket.io');
-var zlib = require('zlib');
-var fs = require('fs');
-var config = require('./config/app.js');
-var session = require('./lib/session.js');
-var Router = require('koa-router');
-var auth = require('./lib/auth.js');
-var login = require('./lib/login.js');
-var index = require('./lib/index.js');
-var orders = require('./lib/orders.js');
-var lcards = require('./lib/lcards.js');
-var logout = require('./lib/logout.js');
+var co       = require('co');
+var marko    = require('marko');
+var http     = require('http');
+var IO       = require('socket.io');
+var zlib     = require('zlib');
+var fs       = require('fs');
+var config   = require('./config/app.js');
+var session  = require('./lib/session.js');
+var Router   = require('koa-router');
+var auth     = require('./lib/auth.js');
+var login    = require('./lib/login.js');
+var index    = require('./lib/index.js');
+var orders   = require('./lib/orders.js');
+var lcards   = require('./lib/lcards.js');
+var logout   = require('./lib/logout.js');
+var config   = require('./config/app.js');
 
 var app = koa();
 app.keys = config.keys;
@@ -40,4 +41,4 @@ lcards.listen(io);
 orders.listen(io);
 session.listen(io);
 
-server.listen(3000);
+server.listen(config.port);
