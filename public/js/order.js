@@ -2,7 +2,7 @@
 
 function OrderComponent(bag) {
   var self = this, obj = {};
-  this.socket = bag.socket;
+  this.socket = bag.sockets.orders;
   this.state = null;
   this.message = { state: null, text: ''};
   this.querying = false;

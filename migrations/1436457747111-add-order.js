@@ -28,7 +28,13 @@ exports.up = function(next) {
       return r.tableCreate('order').run(conn).then(function () { return conn });
     })
     .then(function (conn) {
-      return r.table('order').indexCreate('phone').run(conn);
+      return r.table('order').indexCreate('ctime').run(conn).then(function () { return conn });
+    })
+    .then(function (conn) {
+      return r.table('order').indexCreate('start').run(conn).then(function () { return conn });
+    })
+    .then(function (conn) {
+      return r.table('order').indexCreate('end').run(conn).then(function () { return conn });
     })
     .then(next.bind(null, null), next);
 };

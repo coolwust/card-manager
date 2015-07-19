@@ -4,70 +4,65 @@ document.addEventListener('DOMContentLoaded', function () {
   ng.bootstrap(OrdersComponent);
 });
 
-function OrdersSearch() {
-  var groups;
-  groups = {
+function OrdersComponent(bag) {
+  var self = this;
+  this.bag = bag;
+  this.groups = {
     bars: [
-      {na: '',         se: 'Any',           di: 1, pl: ''                                   },
-      {na: 'start',    se: 'Starting Date', di: 0, pl: 'YYYY.MM.DD', vl: validators.date    },
-      {na: 'end',      se: 'Ending Date',   di: 0, pl: 'YYYY.MM.DD', vl: validators.date    },
-      {na: 'ctime',    se: 'Creation Date', di: 0, pl: 'YYYY.MM.DD', vl: validators.date    },
-      {na: 'name',     se: 'Customer',      di: 0, pl: 'YYYY.MM.DD', vl: validators.date    },
-      {na: 'id',       se: 'Order ID',      di: 0, pl: ''          , vl: validators.order   },
-      {na: 'phone',    se: 'Phone Number',  di: 0, pl: ''          , vl: validators.phone   },
-      {na: 'passport', se: 'Passport ID',   di: 0, pl: ''          , vl: validators.passport},
-      {na: 'lcard',    se: 'LCard ID',      di: 0, pl: ''          , vl: validators.lcard   },
-      {na: 'bcard',    se: 'BCard ID',      di: 0, pl: ''          , vl: validators.bcard   }
+      {name: '',         text: 'Any',           disabled: 1, placeholder: ''                                          },
+      {name: 'start',    text: 'Starting Date', disabled: 0, placeholder: 'YYYY.MM.DD', validator: validators.date    },
+      {name: 'end',      text: 'Ending Date',   disabled: 0, placeholder: 'YYYY.MM.DD', validator: validators.date    },
+      {name: 'ctime',    text: 'Creation Date', disabled: 0, placeholder: 'YYYY.MM.DD', validator: validators.date    },
+      {name: 'name',     text: 'Customer',      disabled: 0, placeholder: ''          , validator: validators.date    },
+      {name: 'id',       text: 'Order ID',      disabled: 0, placeholder: ''          , validator: validators.order   },
+      {name: 'phone',    text: 'Phone Number',  disabled: 0, placeholder: ''          , validator: validators.phone   },
+      {name: 'passport', text: 'Passport ID',   disabled: 0, placeholder: ''          , validator: validators.passport},
+      {name: 'lcard',    text: 'LCard ID',      disabled: 0, placeholder: ''          , validator: validators.lcard   },
+      {name: 'bcard',    text: 'BCard ID',      disabled: 0, placeholder: ''          , validator: validators.bcard   }
     ],
-    combinations: [
-      {na: 'category', bs: ['Active', 'Legacy']},
-      {na: 'shipping', bs: ['', 'Pending', 'Shipped']},
-      {na: 'health',   bs: ['', 'Normal', 'Error']}
+    switches: [
+      {name: 'category', options: ['Active', 'Legacy']},
+      {name: 'shipping', options: ['', 'Pending', 'Shipped']},
+      {name: 'health',   options: ['', 'Normal', 'Error']}
     ]
   };
-  return {
-    groups: groups,
-    trackings: {
-      bar: groups.bars[0],
-      category: 'Active',
-      shipping: '',
-      health: ''
-    },
-    form: new ng.ControlGroup({
-      bar: new ng.Control('')
-    }),
-    get valid() {
-      if (this.trackings.bar.vl) return (this.trackings.bar.vl(this.form.controls.bar) === null);
+  this.trackings = {bar: self.groups.bars[0], category: 'Active'};
+  this.form = new ng.ControlGroup({bar: new ng.Control('')});
+  this.state = 'searched';
+  this.message = '';
+  this.socket = bag.sockets.orders = io(config.host + ':' + config.port + '/orders');
+  this.regions = config.regions;
+  this.snapshot = null;
+  this.page = 1; 
+  this.count = 20;
+  this.results = [];
+  Object.defineProperty(this, 'valid', {
+    get: function () {
+      if (self.trackings.bar.vl) {
+        return self.trackings.bar.vl(self.form.controls.bar) === null;
+      }
       return true;
     }
-    state: null,
-    snapshot: null,
-    page: 1, 
-    count: 20
-    results: [],
-    get filter() {
+  });
+  Object.defineProperty(this, 'filter', {
+    get: function () {
       var filter = '';
-      filter += this.snapshot.region ? ', region=' + this.snapshot.region : '';
-      filter += this.snapshot.id ? ', id=' + this.snapshot.id : '';
-      filter += this.snapshot.ctime ? ', date=' + this.snapshot.ctime : '';
+      filter += this.snapshot.barName? ', ' + this.snapshot.barName : '';
+      filter += this.snapshot.barName ? '=' + this.snapshot.barValue : '';
+      filter += ', ' + this.snapshot.category;
+      filter += this.snapshot.shipping ? ', ' + this.snapshot.shipping : '';
+      filter += this.snapshot.health ? ', ' + this.snapshot.health : '';
       return filter ? filter.substr(1).toLowerCase() : '';
     }
-  };
-}
-
-function OrdersComponent(bag, search) {
-  this.bag = bag;
-  this.search = search;
-  this.socket = io(config.host + ':' + config.port + '/orders');
-  this.regions = config.regions;
-  bag.socket = this.socket;
+  });
   bag.navigation.location = 'orders';
+  this.onSearch();
 }
 
 OrdersComponent.annotations = [
   new ng.ComponentAnnotation({
     selector: 'orders',
-    viewInjector: [Bag, OrdersSearch]
+    viewInjector: [Bag]
   }),
   new ng.ViewAnnotation({
     templateUrl: '../tp/orders.html',
@@ -79,28 +74,80 @@ OrdersComponent.annotations = [
 ];
 
 OrdersComponent.parameters = [
-  [Bag], [OrdersSearch]
+  [Bag]
 ];
+
+OrdersComponent.prototype.onBar = function (i) {
+  this.trackings.bar = this.groups.bars[i];
+  this.form.controls.bar.updateValue('');
+}
+
+OrdersComponent.prototype.onSwitch = function (name, value) {
+  this.trackings[name] = value;
+}
 
 OrdersComponent.prototype.onInsert = function () {
   this.bag.order.state = 'insert';
 }
 
-OrdersComponent.prototype.onBarSwitch = function (i) {
-  this.search.trackings.bar = this.search.groups.bars[i];
-  this.search.form.controls.bar.updateValue('');
-}
-
 OrdersComponent.prototype.onSearch = function (action) {
   var data = {};
-  if (!this.search.valid) return;
-  if (!this.search.trackings.bar.di && this.search.form.controls.bar.value === '') return;
-  data.category = this.search.trackings.category;
-  if (this.search.trackings.shipping !== '') data.shipping = this.search.trackings.shipping;
-  if (this.search.trackings.health !== '') data.health = this.search.trackings.health;
-  if (this.search.trackings.bar.na !== '') data[this.search.trackings.bar.na] = this.search.form.controls.bar.value;
-}
-
-OrdersComponent.prototype.onCombinationSwitch = function (name, value) {
-  this.search.trackings[name] = value;
+  switch (action) {
+    case 'newer':
+      if (this.page === 1) return;
+      data.page = --this.page;
+      break;
+    case 'older':
+      if (this.results.length <= this.count) return;
+      data.page = ++this.page;
+      break;
+    default:
+      if (!this.valid) return;
+      if (!this.trackings.bar.disabled && this.form.controls.bar.value === '') return;
+      if (this.trackings.shipping) data.shipping = this.trackings.shipping;
+      if (this.trackings.health) data.health = this.trackings.health;
+      if (this.trackings.bar.name !== '') {
+        data.barName = this.trackings.bar.name
+        data.barValue = this.form.controls.bar.value;
+      }
+      data.category = this.trackings.category;
+      data.page = this.page = 1;
+      data.count = this.count;
+      this.snapshot = data;
+      break;
+  }
+  this.state = 'standby';
+  this.results = [];
+  this.socket.removeAllListeners();
+  this.socket.emit('search', data);
+  this.socket.on('searched', function (data) {
+    this.state = 'searched';
+    this.total = data.total;
+    function findIndex(id, results) {
+      for (var i = 0; i < results.length; i++) {
+        if (results[i].id === id) return i;
+      }
+    }
+    if (data.new_val && !data.old_val) {
+      this.results.push(data.new_val);
+    }
+    if (data.new_val && data.old_val) {
+      var key = findIndex(data.old_val.id, this.results);
+      this.results[key] = data.new_val;
+    }
+    if (!data.new_val && data.old_val) {
+      var key = findIndex(data.old_val.id, this.results);
+      if (typeof key !== 'number') return;
+      this.results.splice(key, 1);
+    }
+  }.bind(this));
+  this.socket.on('reconnect', function () {
+    this.state = 'standby';
+    this.results = [];
+    this.socket.emit('search', data);
+  }.bind(this));
+  this.socket.on('failed', function (message) {
+    this.state = 'failed';
+    this.message = message;
+  }.bind(this));
 }

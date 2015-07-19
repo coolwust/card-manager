@@ -6,6 +6,7 @@ var insert    = orders.insert;
 var match     = orders.match;
 var bind      = orders.bind;
 var unbound   = orders.unbound;
+var search    = orders.search;
 var timestamp = orders.timestamp;
 var chai      = require('chai');
 var expect    = chai.expect;
@@ -119,4 +120,34 @@ describe('Test orders to lcards unbounds', function () {
     });
   });
 
+});
+
+describe('Test orders search', function () {
+
+  beforeEach(clean);
+  after(clean);
+
+  it('Search cards', function (done) {
+    var conn, orders, filter, data, i = 0;
+    orders = [
+      {id: 0, ctime: r.epochTime(timestamp('2015.06.05')), start: r.epochTime(timestamp('2015.07.10'))},
+      {id: 1, ctime: r.epochTime(timestamp('2015.06.04')), start: r.epochTime(timestamp('2015.07.11'))},
+      {id: 2, ctime: r.epochTime(timestamp('2015.06.03')), start: r.epochTime(timestamp('2015.07.10'))},
+      {id: 3, ctime: r.epochTime(timestamp('2015.06.02')), start: r.epochTime(timestamp('2015.07.10'))},
+      {id: 4, ctime: r.epochTime(timestamp('2015.06.01')), start: r.epochTime(timestamp('2015.07.10'))}
+    ];
+    co(function* () {
+      conn = yield connect();
+      r.table('order').insert(orders).run(conn);
+      filter = {start: r.epochTime(timestamp('2015.07.10'))};
+      data = yield search('order', {index: r.asc('ctime')}, filter, 1, 3);
+      expect(data.total).to.equal(4);
+      data.cursor.on('data', function (order) {
+        i++;
+        if (i === 1) expect(order.new_val.id).to.equal(3);
+        if (i === 2) expect(order.new_val.id).to.equal(2);
+        if (i === 2) done();
+      });
+    });
+  });
 });

@@ -2,37 +2,39 @@
 <order class="modal fade" id="order" tabindex="-1" role="dialog"></order>
 <navigation></navigation>
 <main class="container">
-  <div class="panel panel-default" id="search">
-    <div class="panel-body">
-      <form [ng-form-model]="search.form" (submit)="onSearch()">
+  <div>
+    <div class="panel panel-default" id="search">
+      <div class="panel-body">
+        <form [ng-form-model]="form" (submit)="onSearch()">
 
-        <div class="input-group has-feedback">
-          <div class="input-group-btn">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> {{ search.trackings.bar.se }} <span class="caret"></span></button>
-            <ul class="dropdown-menu">
-              <li *ng-for="#bar of search.groups.bars; #i = index"><a href="#" (click)="onBarSwitch(i)">{{ bar.se }}</a></li>
-            </ul>
+          <div class="input-group has-feedback">
+            <div class="input-group-btn">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> {{ trackings.bar.text }} <span class="caret"></span></button>
+              <ul class="dropdown-menu">
+                <li *ng-for="#bar of groups.bars; #i = index"><a href="#" (click)="onBar(i)">{{ bar.text }}</a></li>
+              </ul>
+            </div>
+            <input type="text" id="search-bar" class="form-control" [disabled]="trackings.bar.disabled" [placeholder]="trackings.bar.placeholder" ng-control="bar">
+            <i class="fa form-control-feedback" *ng-if="!trackings.bar.disabled && form.controls.bar.value === ''"><span>*<span></i>
+            <i class="fa fa-exclamation-triangle form-control-feedback" *ng-if="!valid"></i>
           </div>
-          <input type="text" id="search-bar" class="form-control" [disabled]="search.trackings.bar.di" [placeholder]="search.trackings.bar.pl" ng-control="bar">
-          <i class="fa form-control-feedback" *ng-if="!search.trackings.bar.di && search.form.controls.bar.value === ''"><span>*<span></i>
-          <i class="fa fa-exclamation-triangle form-control-feedback" *ng-if="!search.valid"></i>
-        </div>
 
-        <div class="btn-group" data-toggle="buttons" *ng-for="#combination of search.groups.combinations">
-          <label *ng-for="#bt of combination.bs; #i = index" class="btn btn-default" [class.left-btn]="i === 0" [class.active]="i === 0" (mouseup)="onCombinationSwitch(combination.na, bt)">
-            <input type="radio" [name]="combination.na" autocomplete="off" [checked]="i === 0">{{ bt === '' ? 'All' : bt }}
-          </label>
-        </div>
+          <div class="btn-group" data-toggle="buttons" *ng-for="#switch of groups.switches">
+            <label *ng-for="#option of switch.options; #i = index" class="btn btn-default" [class.left-btn]="i === 0" [class.active]="i === 0" (mouseup)="onSwitch(switch.name, option)">
+              <input type="radio" [name]="switch.name" autocomplete="off" [checked]="i === 0">{{ option === '' ? 'All' : option }}
+            </label>
+          </div>
 
-        <button type="submit" class="btn btn-primary pull-right">Search</button>
-      </form>
+          <button type="submit" class="btn btn-primary pull-right">Search</button>
+        </form>
+      </div>
     </div>
-  </div>
 
-  <div class="panel panel-default" id="insert">
-    <a href="#" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#order" (click)="onInsert()">
-      <i class="fa fa-plus" (click)="onInsert()"></i>
-    </a>
+    <div class="panel panel-default" id="insert">
+      <a href="#" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#order" (click)="onInsert()">
+        <i class="fa fa-plus" (click)="onInsert()"></i>
+      </a>
+    </div>
   </div>
 
   <div class="container"></div>
@@ -49,11 +51,11 @@
 
   <div *ng-if="state === 'searched'">
     <div id="search-info">
-      <span class="well well-sm">{{ search.total }} results</span>
-      <span class="well well-sm">{{ search.count }} results per page</span>
-      <span class="well well-sm">page {{ search.page }}</span>
+      <span class="well well-sm">{{ total }} results</span>
+      <span class="well well-sm">{{ count }} results per page</span>
+      <span class="well well-sm">page {{ page }}</span>
       <span class="well well-sm">order by date added</span>
-      <span class="well well-sm">{{ search.filter }}</span>
+      <span class="well well-sm">{{ filter }}</span>
     </div>
     <div id="orders-list">
       <section class="list-element animated fadeIn">
@@ -68,12 +70,10 @@
         </table>
       </section>
     </div>
-    <div>
-      <ul class="pager" id="filter-nav">
-        <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> New</a></li>
-        <li class="next disabled"><a href="#">Old <span aria-hidden="true">&rarr;</span></a></li>
-      </ul>
-    </div>
+    <ul class="pager" id="orders-pager">
+      <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> New</a></li>
+      <li class="next disabled"><a href="#">Old <span aria-hidden="true">&rarr;</span></a></li>
+    </ul>
   </div>
 
 </main>
