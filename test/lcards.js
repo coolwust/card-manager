@@ -61,7 +61,7 @@ describe('Test lcards searching', function () {
     }, done);;
   });
 
-  it('Search lcards by id', function (done) {
+  it('Search lcards by ID', function (done) {
     var conn, lcards, cursor;
     co(function* () {
       yield insert('123\n456', 'America');

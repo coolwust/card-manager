@@ -9,13 +9,13 @@
 
           <div class="input-group has-feedback">
             <div class="input-group-btn">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> {{ trackings.bar.text }} <span class="caret"></span></button>
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> {{ bar.text }} <span class="caret"></span></button>
               <ul class="dropdown-menu">
                 <li *ng-for="#bar of groups.bars; #i = index"><a href="#" (click)="onBar(i)">{{ bar.text }}</a></li>
               </ul>
             </div>
-            <input type="text" id="search-bar" class="form-control" [disabled]="trackings.bar.disabled" [placeholder]="trackings.bar.placeholder" ng-control="bar">
-            <i class="fa form-control-feedback" *ng-if="!trackings.bar.disabled && form.controls.bar.value === ''"><span>*<span></i>
+            <input type="text" id="search-bar" class="form-control" [disabled]="bar.disabled" [placeholder]="bar.placeholder" ng-control="bar">
+            <i class="fa form-control-feedback" *ng-if="!bar.disabled && form.controls.bar.value === ''"><span>*<span></i>
             <i class="fa fa-exclamation-triangle form-control-feedback" *ng-if="!valid"></i>
           </div>
 
@@ -57,22 +57,28 @@
       <span class="well well-sm">order by date added</span>
       <span class="well well-sm">{{ filter }}</span>
     </div>
-    <div id="orders-list">
-      <section class="list-element animated fadeIn">
+    <div class="animated fadeIn" id="orders-list">
+      <div *ng-for="#result of results.slice(0, count - 1)" class="list-element">
+        <div>
         <table>
-          <tr><td class="list-element-title"><strong>Order</strong></td> <td><a href="#">13074107347130471</a></td></tr>
-          <tr><td class="list-element-title"><strong>Name</strong></td><td>王香寒</td></tr>
-          <tr><td class="list-element-title"><strong>Phone</strong></td><td>13905200000</td></tr>
-          <tr><td class="list-element-title"><strong>Date</strong></td><td>2015.06.30 - 2015.07.15</td></tr>
-          <tr><td class="list-element-title"><strong>BCard</strong></td><td>17834701734712034174</td></tr>
-          <tr><td class="list-element-title"><strong>LCard</strong></td><td>757095273745724750925</td></tr>
-          <tr><td class="list-element-title"><strong>UPS</strong></td><td>1Z5A806V0395121279</td></tr>
+          <tr><td class="list-element-title"><strong>Order</strong></td> <td><a href="#" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#order" (click)="onUpdate()">{{ result.id }}</a></td></tr>
+          <tr><td class="list-element-title"><strong>Time</strong></td> <td>{{ result.ctime }}</td></tr>
+          <tr><td class="list-element-title"><strong>Name</strong></td><td>{{ result.name }}</td></tr>
+          <tr><td class="list-element-title"><strong>Phone</strong></td><td>{{ result.phone }}</td></tr>
+          <tr><td class="list-element-title"><strong>PSPT</strong></td><td>{{ result.passport }}</td></tr>
+          <tr><td class="list-element-title"><strong>Duration</strong></td><td>{{ result.start }} - {{ result.end }}</td></tr>
+          <tr *ng-if="result.bcard"><td class="list-element-title"><strong>BCard</strong></td><td>{{ result.bcard }}</td></tr>
+          <tr><td class="list-element-title"><strong>LCard</strong></td><td>{{ result.lcard }}</td></tr>
+          <tr *ng-if="result.carrier"><td class="list-element-title"><strong>Carrier</strong></td><td>{{ result.carrier }}</td></tr>
+          <tr *ng-if="result.tracking"><td class="list-element-title"><strong>Track</strong></td><td>{{ result.tracking }}</td></tr>
+          <tr *ng-if="result.note"><td class="list-element-title"><strong>Note</strong></td><td>{{ result.note }}</td></tr>
         </table>
-      </section>
+        </div>
+      </div>
     </div>
     <ul class="pager" id="orders-pager">
-      <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> New</a></li>
-      <li class="next disabled"><a href="#">Old <span aria-hidden="true">&rarr;</span></a></li>
+      <li class="previous" [class.disabled]="page === 1"><a href="#" (click)="onSearch('newer')"><span aria-hidden="true">&larr;</span> Newer</a></li>
+      <li class="next" [class.disabled]="results.length <= count"><a href="#" (click)="onSearch('older')">Older <span aria-hidden="true">&rarr;</span></a></li>
     </ul>
   </div>
 
