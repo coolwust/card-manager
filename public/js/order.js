@@ -56,8 +56,9 @@ function OrderComponent(bag) {
         self.state = 'insert';
       } else if (value === 'update') {
         self.state = 'wait';
-        self.socket.emit('get', { id: '123' });
+        self.socket.emit('get', {id: bag.order.id, table: bag.order.table});
         self.socket.on('got', function (data) {
+        console.log(data);
           self.state = 'update';
           self.fill(data);
         });

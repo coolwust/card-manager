@@ -8,6 +8,7 @@ var bind      = orders.bind;
 var unbound   = orders.unbound;
 var search    = orders.search;
 var count     = orders.count;
+var get       = orders.get;
 var doSearch  = orders.doSearch;
 var timestamp = orders.timestamp;
 var chai      = require('chai');
@@ -216,4 +217,26 @@ describe('Test orders search upon data received', function () {
       });
     }).catch(done);
   });
+});
+
+describe('Test order get', function () {
+
+  beforeEach(clean);
+  after(clean);
+
+  it('Get an order', function () {
+    var conn, orders, order;
+    orders = [
+      {id: 0, name: 'foo'},
+      {id: 1, name: 'bar'}
+    ];
+    return co(function* () {
+      conn = yield connect();
+      yield r.table('order').insert(orders).run(conn);
+      order = yield get('order', 1);
+      expect(order).to.be.an('Object');
+      expect(order.name).to.equal('bar');
+    });
+  });
+
 });

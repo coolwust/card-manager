@@ -61,7 +61,7 @@
       <div *ng-for="#result of results.slice(0, count - 1)" class="list-element">
         <div>
         <table>
-          <tr><td class="list-element-title"><strong>Order</strong></td> <td><a href="#" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#order" (click)="onUpdate()">{{ result.id }}</a></td></tr>
+          <tr><td class="list-element-title"><strong>Order</strong></td> <td><a href="#" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#order" (click)="onUpdate(result.id)">{{ result.id }}</a></td></tr>
           <tr><td class="list-element-title"><strong>Time</strong></td> <td>{{ result.ctime }}</td></tr>
           <tr><td class="list-element-title"><strong>Name</strong></td><td>{{ result.name }}</td></tr>
           <tr><td class="list-element-title"><strong>Phone</strong></td><td>{{ result.phone }}</td></tr>
@@ -69,6 +69,7 @@
           <tr><td class="list-element-title"><strong>Duration</strong></td><td>{{ result.start }} - {{ result.end }}</td></tr>
           <tr *ng-if="result.bcard"><td class="list-element-title"><strong>BCard</strong></td><td>{{ result.bcard }}</td></tr>
           <tr><td class="list-element-title"><strong>LCard</strong></td><td>{{ result.lcard }}</td></tr>
+          <tr><td class="list-element-title"><strong>Addr</strong></td><td>{{ result.address }}</td></tr>
           <tr *ng-if="result.carrier"><td class="list-element-title"><strong>Carrier</strong></td><td>{{ result.carrier }}</td></tr>
           <tr *ng-if="result.tracking"><td class="list-element-title"><strong>Track</strong></td><td>{{ result.tracking }}</td></tr>
           <tr *ng-if="result.note"><td class="list-element-title"><strong>Note</strong></td><td>{{ result.note }}</td></tr>

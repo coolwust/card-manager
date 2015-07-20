@@ -37,7 +37,7 @@ function OrdersComponent(bag) {
   this.message = '';
   this.snapshot = null;
   this.page = 1; 
-  this.count = 9;
+  this.count = 20;
   this.results = [];
   Object.defineProperty(this, 'valid', {
     get: function () {
@@ -93,7 +93,9 @@ OrdersComponent.prototype.onInsert = function () {
   this.bag.order.state = 'insert';
 }
 
-OrdersComponent.prototype.onUpdate = function () {
+OrdersComponent.prototype.onUpdate = function (id) {
+  this.bag.order.id = id;
+  this.bag.order.table = this.snapshot.table;
   this.bag.order.state = 'update';
 }
 
