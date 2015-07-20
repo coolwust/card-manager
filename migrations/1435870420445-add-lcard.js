@@ -4,12 +4,12 @@ var r = require('rethinkdb');
 var config = require('../config/db_connect.js');
 
 // fields: 
-//   id: the lcard id
-//   ctime: lcard creation time
-//   region: lcard region
-//   orders: an object containing mapping of order id and order duration
-//   bindings: an array containing order ids
-//   free: the time that the lcard will be free to use
+//   id: 
+//   ctime: 
+//   region: 
+//   orders: 
+//   bindings: 
+//   free: 
 exports.up = function(next) {
   r
     .connect(config)

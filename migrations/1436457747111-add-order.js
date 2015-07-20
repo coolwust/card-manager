@@ -4,20 +4,19 @@ var r = require('rethinkdb');
 var config = require('../config/db_connect.js');
 
 // fields:
-//   ctime: the order creation date
-//   lcard: the lcard id
-//   id:    the order id     
+//   ctime:
+//   lcard:
+//   id:
 //   name:    
 //   passport:
 //   phone:   
 //   start:   
 //   end:     
 //   region:  
-//   health:  
+//   warning:  
 //   address: 
 //   note:    
-//   category:
-//   shipping:
+//   shipped:
 //   carrier: 
 //   tracking:
 //   bcard:   
