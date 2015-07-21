@@ -238,6 +238,39 @@ describe('Test order update', function () {
     })).to.eventually.be.rejectedWith(Error);
   });
 
+  it('Update an order without changing its ID and duration', function () {
+    var order, conn;
+    order = {
+      id: '1', name: 'coldume', passport: 'G12345678', phone: '13905200000',
+      start: toDate('2015.07.10'), end: toDate('2015.07.30'), region: 'usa',
+      warning: null, address: 'moon street #1', note: null, shipped: false,
+      carrier: null, tracking: null, bcard: null, ctime: toDate('2015.07.01'),
+      lcard: '111-111-111'
+    };
+    return co(function* () {
+      conn = yield connect();
+      yield r.table('order').insert(order).run(conn);
+      yield update(
+        '1', 'order', '1', 'coldume', 'G87654321', '13805200000',
+        toDate('2015.07.10'), toDate('2015.07.30'), 'usa', null,
+        'moon street #2', 'foo', true, 'ups', 'A123456', '111222333'
+      );
+      order = yield r.table('order').get('1').run(conn);
+      expect(order.passport).to.equal('G87654321');
+      expect(order.phone).to.equal('13805200000');
+      expect(+order.start).to.equal(+toDate('2015.07.10'));
+      expect(+order.end).to.equal(+toDate('2015.07.30'));
+      expect(+order.ctime).to.equal(+toDate('2015.07.01'));
+      expect(order.region).to.equal('usa');
+      expect(order.address).to.equal('moon street #2');
+      expect(order.note).to.equal('foo');
+      expect(order.shipped).to.be.true;
+      expect(order.carrier).to.equal('ups');
+      expect(order.tracking).to.equal('A123456');
+      expect(order.bcard).to.equal('111222333');
+    });
+  });
+
 });
 
 describe('Test order get', function () {
