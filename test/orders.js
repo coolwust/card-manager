@@ -4,6 +4,7 @@ var connect   = require('../lib/connect.js');
 var orders    = require('../lib/orders.js');
 var match     = orders.match;
 var bind      = orders.bind;
+var rebind    = orders.rebind;
 var unbound   = orders.unbound;
 var insert    = orders.insert;
 var del       = orders.del;
@@ -96,12 +97,41 @@ describe('Test orders to lcards bindings', function () {
 
 });
 
+describe('Test orders to lcards rebind', function () {
+
+  beforeEach(clean);
+  after(clean);
+
+  it('Rebind an order to an lcard', function () {
+    var conn, lcards, free, orders, lcard;
+    free = toDate('2015.07.30');
+    orders = {'0': {start: toDate('2015.07.10'), end: toDate('2015.07.30')}};
+    lcards = [
+      {id: '0', bindings: [],    free: r.epochTime(0), orders: {}    },
+      {id: '1', bindings: ['0'], free: free,           orders: orders}
+    ];
+    return co(function* () {
+      conn = yield connect();
+      yield r.table('lcard').insert(lcards).run(conn);
+      yield rebind('0', '99');
+      lcard = yield r.table('lcard').get('1').run(conn);
+      expect(lcard.bindings).to.have.length(1);
+      expect(lcard.bindings).to.contain('99');
+      expect(lcard.orders).to.not.have.ownProperty('0');
+      expect(lcard.orders).to.have.ownProperty('99');
+      expect(lcard.orders['99'].start.getTime()).to.equal(toDate('2015.07.10').getTime());
+      expect(lcard.orders['99'].end.getTime()).to.equal(toDate('2015.07.30').getTime());
+      expect(lcard.free.getTime()).to.equal(toDate('2015.07.30').getTime());
+    });
+  });
+});
+
 describe('Test orders to lcards unbounds', function () {
 
   beforeEach(clean);
   after(clean);
 
-  it('Unbound orders to an lcard', function () {
+  it('Unbound an order to an lcard', function () {
     var conn, lcard;
     lcard = {id: '0', free: r.epochTime(0), orders: {}, bindings: []};
     return co(function* () {
