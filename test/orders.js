@@ -2,13 +2,15 @@
 
 var connect   = require('../lib/connect.js');
 var orders    = require('../lib/orders.js');
-var insert    = orders.insert;
 var match     = orders.match;
 var bind      = orders.bind;
 var unbound   = orders.unbound;
+var insert    = orders.insert;
+var del       = orders.del;
+var update    = orders.update;
+var get       = orders.get;
 var search    = orders.search;
 var count     = orders.count;
-var get       = orders.get;
 var doSearch  = orders.doSearch;
 var toDate    = orders.toDate;
 var chai      = require('chai');
@@ -25,6 +27,7 @@ function clean() {
     var conn = yield connect();
     yield r.table('lcard').delete().run(conn);
     yield r.table('order').delete().run(conn);
+    yield r.table('legacy').delete().run(conn);
   });
 }
 
@@ -162,6 +165,47 @@ describe('Test order insert', function () {
       order = yield r.table('order').get('1').run(conn);
       expect(order.lcard).to.equal('1');
     });
+  });
+
+});
+
+describe('Test order delete', function () {
+
+  beforeEach(clean);
+  after(clean);
+
+  it('Delete an order from order table', function () {
+    var conn, lcard, order, id;
+    lcard = {id: '0', region: 'usa', free: r.epochTime(0), orders: {}, bindings: []};
+    return co(function* () {
+      var conn = yield connect();
+      yield r.table('lcard').insert(lcard).run(conn);
+      yield insert(
+        'order', '0', 'coldume', 'G12345678', '13905200000', toDate('2015.07.10'),
+        toDate('2015.07.20'), 'usa', null, 'moon street #1', null, false, null,
+        null, null
+      );
+      lcard = yield r.table('lcard').get('0').run(conn);
+      expect(lcard.bindings.length).to.equal(1);
+      id = yield del('0');
+      expect(id).to.equal('0');
+      order = yield r.table('order').get('0').run(conn);
+      expect(order).to.equal(null);
+      lcard = yield r.table('lcard').get('0').run(conn);
+      expect(lcard.bindings.length).to.equal(0);
+    });
+  });
+});
+
+describe('Test order update', function () {
+
+  beforeEach(clean);
+  after(clean);
+
+  it('Update an non-existing order', function () {
+    return expect(co(function* () {
+      yield update('0', 'order');
+    })).to.eventually.be.rejectedWith(Error);
   });
 
 });
