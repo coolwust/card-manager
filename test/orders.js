@@ -13,6 +13,7 @@ var get       = orders.get;
 var search    = orders.search;
 var count     = orders.count;
 var doSearch  = orders.doSearch;
+var doWrite   = orders.doWrite;
 var toDate    = orders.toDate;
 var chai      = require('chai');
 var expect    = chai.expect;
@@ -612,5 +613,57 @@ describe('Test orders search upon data received', function () {
         }
       });
     }).catch(done);
+  });
+});
+
+describe('Test order write upon data received', function () {
+
+  beforeEach(clean);
+  after(clean);
+
+  it('Insert order', function () {
+    var conn, lcards, data, order;
+    lcards = [
+      {id: '0', region: 'europe', free: r.epochTime(0), orders: {}, bindings: []},
+      {id: '1', region: 'usa',    free: r.epochTime(0), orders: {}, bindings: []}
+    ];
+    data = {
+      id: '0', name: 'coldume', passport: 'G12345678', phone: '13905200000',
+      start: '2015.07.10', end: '2015.07.20', region: 'usa', warning: false,
+      address: 'moon street #1', note: null, shipped: false, carrier: null, 
+      tracking: null, bcard: null
+    };
+    return co(function* () {
+      conn = yield connect();
+      yield r.table('lcard').insert(lcards).run(conn);
+      order = yield doWrite(data, 'insert');
+      expect(order.id).to.equal(data.id);
+      expect(order.name).to.equal(data.name);
+      expect(order.passport).to.equal(data.passport);
+      expect(order.phone).to.equal(data.phone);
+      expect(order.start).to.equal(data.start);
+      expect(order.end).to.equal(data.end);
+      expect(order.region).to.equal(data.region);
+      expect(order.warning).to.equal(data.warning);
+      expect(order.address).to.equal(data.address);
+      expect(order.note).to.equal(data.note);
+      expect(order.shipped).to.equal(data.shipped);
+      expect(order.carrier).to.equal(data.carrier);
+      expect(order.tracking).to.equal(data.tracking);
+      expect(order.bcard).to.equal(data.bcard);
+    });
+  });
+
+  it ('Insert order with wrong start date', function () {
+    var data;
+    data = {
+      id: '0', name: 'coldume', passport: 'G12345678', phone: '13905200000',
+      start: '2015-07-10', end: '2015.07.20', region: 'usa', warning: false,
+      address: 'moon street #1', note: null, shipped: false, carrier: null, 
+      tracking: null, bcard: null
+    };
+    return expect(co(function* () {
+      yield doWrite(data, 'insert');
+    })).to.eventually.be.rejectedWith(Error);
   });
 });
