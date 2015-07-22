@@ -170,11 +170,12 @@ describe('Test order insert', function () {
   after(clean);
 
   it('Insert an order with existing id', function () {
-    var conn;
+    var conn, order;
+    order = {id: '0'};
     return expect(co(function* () {
       conn = yield connect();
       yield r.table('order').insert(order).run(conn);
-      yield insert('order', '0');
+      yield insert('0');
     })).to.eventually.be.rejectedWith(Error);
   });
 
@@ -187,12 +188,11 @@ describe('Test order insert', function () {
     return co(function* () {
       conn = yield connect();
       yield r.table('lcard').insert(lcards).run(conn);
-      yield insert(
-        'order', '1', 'coldume', 'G12345678', '13905200000', toDate('2015.07.10'),
+      order = yield insert(
+        '1', 'coldume', 'G12345678', '13905200000', toDate('2015.07.10'),
         toDate('2015.07.20'), 'usa', null, 'moon street #1', null, false, null,
         null, null
       );
-      order = yield r.table('order').get('1').run(conn);
       expect(order.lcard).to.equal('1');
     });
   });
@@ -211,7 +211,7 @@ describe('Test order delete', function () {
       var conn = yield connect();
       yield r.table('lcard').insert(lcard).run(conn);
       yield insert(
-        'order', '0', 'coldume', 'G12345678', '13905200000', toDate('2015.07.10'),
+        '0', 'coldume', 'G12345678', '13905200000', toDate('2015.07.10'),
         toDate('2015.07.20'), 'usa', null, 'moon street #1', null, false, null,
         null, null
       );
@@ -250,12 +250,11 @@ describe('Test order update', function () {
     return co(function* () {
       conn = yield connect();
       yield r.table('order').insert(order).run(conn);
-      yield update(
+      order = yield update(
         '0', 'order', '0', 'coldume', 'G87654321', '13805200000',
         toDate('2015.07.10'), toDate('2015.07.30'), 'usa', null,
         'moon street #2', 'foo', true, 'ups', 'A123456', '111222333'
       );
-      order = yield r.table('order').get('0').run(conn);
       expect(order.passport).to.equal('G87654321');
       expect(order.phone).to.equal('13805200000');
       expect(+order.start).to.equal(+toDate('2015.07.10'));
@@ -292,12 +291,11 @@ describe('Test order update', function () {
       conn = yield connect();
       yield r.table('lcard').insert(lcards).run(conn);
       yield r.table('order').insert(order).run(conn);
-      yield update(
+      order = yield update(
         '0', 'order', '0', 'coldume', 'G87654321', '13805200000',
         toDate('2015.07.11'), toDate('2015.08.01'), 'usa', null,
         'moon street #2', 'foo', true, 'ups', 'A123456', '111222333'
       );
-      order = yield r.table('order').get('0').run(conn);
       expect(+order.start).to.equal(+toDate('2015.07.11'));
       expect(+order.end).to.equal(+toDate('2015.08.01'));
       expect(order.passport).to.equal('G87654321');
@@ -319,12 +317,11 @@ describe('Test order update', function () {
       expect(lcard.orders).to.have.ownProperty('0');
       expect(+lcard.orders['0'].start).to.equal(+toDate('2015.07.11'));
       expect(+lcard.orders['0'].end).to.equal(+toDate('2015.08.01'));
-      yield update(
+      order = yield update(
         '0', 'order', '0', 'coldume', 'G87654321', '13805200000',
         toDate('2015.07.11'), toDate('2015.08.01'), 'europe', null,
         'moon street #2', 'foo', true, 'ups', 'A123456', '111222333'
       );
-      order = yield r.table('order').get('0').run(conn);
       expect(+order.start).to.equal(+toDate('2015.07.11'));
       expect(+order.end).to.equal(+toDate('2015.08.01'));
       expect(order.passport).to.equal('G87654321');
@@ -369,14 +366,11 @@ describe('Test order update', function () {
       conn = yield connect();
       yield r.table('lcard').insert(lcards).run(conn);
       yield r.table('order').insert(order).run(conn);
-      yield update(
+      order = yield update(
         '0', 'order', '1', 'coldume', 'G87654321', '13805200000',
         toDate('2015.07.10'), toDate('2015.07.30'), 'usa', null,
         'moon street #2', 'foo', true, 'ups', 'A123456', '111222333'
       );
-      order = yield r.table('order').get('0').run(conn);
-      expect(order).to.be.null;
-      order = yield r.table('order').get('1').run(conn);
       expect(order).to.not.be.null;
       expect(+order.start).to.equal(+toDate('2015.07.10'));
       expect(+order.end).to.equal(+toDate('2015.07.30'));
@@ -398,6 +392,8 @@ describe('Test order update', function () {
       expect(lcard.orders).to.have.ownProperty('1');
       expect(+lcard.orders['1'].start).to.equal(+toDate('2015.07.10'));
       expect(+lcard.orders['1'].end).to.equal(+toDate('2015.07.30'));
+      order = yield r.table('order').get('0').run(conn);
+      expect(order).to.be.null;
     });
   });
 
@@ -421,14 +417,11 @@ describe('Test order update', function () {
       conn = yield connect();
       yield r.table('lcard').insert(lcards).run(conn);
       yield r.table('order').insert(order).run(conn);
-      yield update(
+      order = yield update(
         '0', 'order', '1', 'coldume', 'G87654321', '13805200000',
         toDate('2015.07.11'), toDate('2015.08.01'), 'europe', null,
         'moon street #2', 'foo', true, 'ups', 'A123456', '111222333'
       );
-      order = yield r.table('order').get('0').run(conn);
-      expect(order).to.be.null;
-      order = yield r.table('order').get('1').run(conn);
       expect(order).to.not.be.null;
       expect(+order.start).to.equal(+toDate('2015.07.11'));
       expect(+order.end).to.equal(+toDate('2015.08.01'));
@@ -454,6 +447,8 @@ describe('Test order update', function () {
       expect(lcard.orders).to.have.ownProperty('1');
       expect(+lcard.orders['1'].start).to.equal(+toDate('2015.07.11'));
       expect(+lcard.orders['1'].end).to.equal(+toDate('2015.08.01'));
+      order = yield r.table('order').get('0').run(conn);
+      expect(order).to.be.null;
     });
   });
 
@@ -473,14 +468,11 @@ describe('Test order update', function () {
       conn = yield connect();
       yield r.table('lcard').insert(lcard).run(conn);
       yield r.table('order').insert(order).run(conn);
-      yield update(
+      order = yield update(
         '0', 'legacy', '1', 'coldume', 'G87654321', '13805200000',
         toDate('2015.07.11'), toDate('2015.08.01'), 'europe', null,
         'moon street #2', 'foo', true, 'ups', 'A123456', '111222333'
       );
-      order = yield r.table('order').get('0').run(conn);
-      expect(order).to.be.null;
-      order = yield r.table('legacy').get('1').run(conn);
       expect(order).to.not.be.null;
       expect(+order.start).to.equal(+toDate('2015.07.11'));
       expect(+order.end).to.equal(+toDate('2015.08.01'));
@@ -500,6 +492,8 @@ describe('Test order update', function () {
       expect(lcard.orders).to.not.have.ownProperty('0');
       expect(lcard.orders).to.not.have.ownProperty('1');
       expect(+lcard.free).to.equal(0);
+      order = yield r.table('order').get('0').run(conn);
+      expect(order).to.be.null;
     });
   });
 
@@ -581,48 +575,42 @@ describe('Test orders count', function () {
 
 });
 
-//describe('Test orders search upon data received', function () {
-//
-//  beforeEach(clean);
-//  after(clean);
-//
-//  it('Search orders', function (done) {
-//    var conn, orders, data, cursor, i = 0;
-//    orders = [
-//      {id: '0', start: toDate('2015.07.10'), shipped: true,  warning: false},
-//      {id: '1', start: toDate('2015.07.11'), shipped: true,  warning: false},
-//      {id: '2', start: toDate('2015.07.09'), shipped: false, warning: false},
-//      {id: '3', start: toDate('2015.07.08'), shipped: true,  warning: false},
-//      {id: '4', start: toDate('2015.07.07'), shipped: true,  warning: false}
-//    ];
-//    data = {
-//      table: 'order',
-//      index: 'start',
-//      sorting: 'asc',
-//      startIndex: 1,
-//      endIndex: 2,
-//      shipping: 'Shipped',
-//      health: 'Normal',
-//      domain: {name: 'start', value: '2015.07.10'}
-//    };
-//    co(function* () {
-//      conn = yield connect();
-//      yield r.table('order').insert(orders).run(conn);
-//      cursor = yield doSearch(data);
-//      cursor.on('data', function (data) {
-//        i++;
-//        if (i === 1) {
-//          expect(data.total).to.equal(3);
-//          expect(data.order.new_val.id).to.equal(3);
-//          expect(data.order.new_val.start).to.equal('2015.07.08');
-//        }
-//        if (i === 2) {
-//          expect(data.total).to.equal(3);
-//          expect(data.order.new_val.id).to.equal(0);
-//          expect(data.order.new_val.start).to.equal('2015.07.10');
-//          done();
-//        }
-//      });
-//    }).catch(done);
-//  });
-//});
+describe('Test orders search upon data received', function () {
+
+  beforeEach(clean);
+  after(clean);
+
+  it('Search orders', function (done) {
+    var conn, orders, data, cursor, i = 0;
+    orders = [
+      {id: '0', start: toDate('2015.07.10'), shipped: true,  warning: false},
+      {id: '1', start: toDate('2015.07.11'), shipped: true,  warning: false},
+      {id: '2', start: toDate('2015.07.09'), shipped: false, warning: false},
+      {id: '3', start: toDate('2015.07.08'), shipped: true,  warning: false},
+      {id: '4', start: toDate('2015.07.07'), shipped: true,  warning: false}
+    ];
+    data = {
+      table: 'order', index: 'start', sorting: 'asc', startIndex: 1, endIndex: 2,
+      shipped: true, warning: false, domain: {name: 'start', value: '2015.07.10'}
+    };
+    co(function* () {
+      conn = yield connect();
+      yield r.table('order').insert(orders).run(conn);
+      cursor = yield doSearch(data);
+      cursor.on('data', function (data) {
+        i++;
+        if (i === 1) {
+          expect(data.total).to.equal(3);
+          expect(data.order.new_val.id).to.equal('3');
+          expect(data.order.new_val.start).to.equal('2015.07.08');
+        }
+        if (i === 2) {
+          expect(data.total).to.equal(3);
+          expect(data.order.new_val.id).to.equal('0');
+          expect(data.order.new_val.start).to.equal('2015.07.10');
+          done();
+        }
+      });
+    }).catch(done);
+  });
+});
