@@ -609,6 +609,7 @@ describe('Test orders search upon data received', function () {
           expect(data.total).to.equal(3);
           expect(data.order.new_val.id).to.equal('0');
           expect(data.order.new_val.start).to.equal('2015.07.10');
+          cursor.close();
           done();
         }
       });
