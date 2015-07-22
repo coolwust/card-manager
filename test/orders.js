@@ -651,10 +651,11 @@ describe('Test order write upon data received', function () {
       expect(order.carrier).to.equal(data.carrier);
       expect(order.tracking).to.equal(data.tracking);
       expect(order.bcard).to.equal(data.bcard);
+      expect(order.lcard).to.equal('1');
     });
   });
 
-  it ('Insert order with wrong start date', function () {
+  it ('Insert an order with wrong start date', function () {
     var data;
     data = {
       id: '0', name: 'coldume', passport: 'G12345678', phone: '13905200000',
@@ -665,5 +666,59 @@ describe('Test order write upon data received', function () {
     return expect(co(function* () {
       yield doWrite(data, 'insert');
     })).to.eventually.be.rejectedWith(Error);
+  });
+
+  it ('Update an order with wrong carrier', function () {
+    var data;
+    data = {
+      id: '0', name: 'coldume', passport: 'G12345678', phone: '13905200000',
+      start: '2015.07.11', end: '2015.07.22', region: 'europe', warning: false,
+      address: 'moon street #1', note: null, shipped: true, carrier: null, 
+      tracking: '123456', bcard: '111222333', oldId: '0', table: 'order'
+    };
+    return expect(co(function* () {
+      yield doWrite(data, 'update');
+    })).to.eventually.be.rejectedWith(Error);
+  });
+
+  it('Insert an order then update the order', function () {
+    var conn, lcards, data1, data2, order;
+    lcards = [
+      {id: '0', region: 'europe', free: r.epochTime(0), orders: {}, bindings: []},
+      {id: '1', region: 'usa',    free: r.epochTime(0), orders: {}, bindings: []}
+    ];
+    data1 = {
+      id: '0', name: 'coldume', passport: 'G12345678', phone: '13905200000',
+      start: '2015.07.10', end: '2015.07.20', region: 'usa', warning: false,
+      address: 'moon street #1', note: null, shipped: false, carrier: null, 
+      tracking: null, bcard: null
+    };
+    data2 = {
+      id: '0', name: 'coldume', passport: 'G12345678', phone: '13905200000',
+      start: '2015.07.11', end: '2015.07.22', region: 'europe', warning: false,
+      address: 'moon street #1', note: null, shipped: true, carrier: 'UPS', 
+      tracking: '123456', bcard: '111222333', oldId: '0', table: 'order'
+    };
+    return co(function* () {
+      conn = yield connect();
+      yield r.table('lcard').insert(lcards).run(conn);
+      yield doWrite(data1, 'insert');
+      order = yield doWrite(data2, 'update');
+      expect(order.id).to.equal(data2.id);
+      expect(order.name).to.equal(data2.name);
+      expect(order.passport).to.equal(data2.passport);
+      expect(order.phone).to.equal(data2.phone);
+      expect(order.start).to.equal(data2.start);
+      expect(order.end).to.equal(data2.end);
+      expect(order.region).to.equal(data2.region);
+      expect(order.warning).to.equal(data2.warning);
+      expect(order.address).to.equal(data2.address);
+      expect(order.note).to.equal(data2.note);
+      expect(order.shipped).to.equal(data2.shipped);
+      expect(order.carrier).to.equal(data2.carrier);
+      expect(order.tracking).to.equal(data2.tracking);
+      expect(order.bcard).to.equal(data2.bcard);
+      expect(order.lcard).to.equal('0');
+    });
   });
 });
