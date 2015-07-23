@@ -10,7 +10,13 @@ exports.up = function(next) {
       return r.tableCreate('legacy').run(conn).then(function () { return conn });
     })
     .then(function (conn) {
-      return r.table('legacy').indexCreate('phone').run(conn);
+      return r.table('legacy').indexCreate('ctime').run(conn).then(function () { return conn });
+    })
+    .then(function (conn) {
+      return r.table('legacy').indexCreate('start').run(conn).then(function () { return conn });
+    })
+    .then(function (conn) {
+      return r.table('legacy').indexCreate('end').run(conn).then(function () { return conn });
     })
     .then(next.bind(null, null), next);
 };

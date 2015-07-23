@@ -20,12 +20,12 @@
           </div>
 
           <div class="btn-group" data-toggle="buttons" *ng-for="#switch of groups.switches">
-            <label *ng-for="#option of switch.options; #i = index" class="btn btn-default" [class.left-btn]="i === 0" [class.active]="i === 0" (mouseup)="onSwitch(switch.name, option)">
-              <input type="radio" [name]="switch.name" autocomplete="off" [checked]="i === 0">{{ option === '' ? 'All' : option }}
+            <label *ng-for="#option of switch.options; #i = index" class="btn btn-default" [class.left-btn]="i === 0" [class.active]="i === 0" (mouseup)="onSwitch(switch.name, option[0])">
+              <input type="radio" [name]="switch.name" autocomplete="off" [checked]="i === 0">{{ option[1] }}
             </label>
           </div>
 
-          <button type="submit" class="btn btn-primary pull-right">Search</button>
+          <button type="submit" class="btn btn-primary pull-right">搜索</button>
         </form>
       </div>
     </div>
@@ -51,35 +51,37 @@
 
   <div *ng-if="state === 'searched'">
     <div id="search-info">
-      <span class="well well-sm">{{ total }} results</span>
-      <span class="well well-sm">{{ count }} results per page</span>
-      <span class="well well-sm">page {{ page }}</span>
+      <span class="well well-sm">搜索结果为 {{ total }} 条订单</span>
+      <span class="well well-sm">每页最多显示 {{ count }} 条</span>
+      <span class="well well-sm">当前页数 {{ page }}</span>
+      <!--
       <span class="well well-sm">order by date added</span>
       <span class="well well-sm">{{ filter }}</span>
+      -->
     </div>
     <div class="animated fadeIn" id="orders-list">
-      <div *ng-for="#result of results.slice(0, count - 1)" class="list-element">
+      <div *ng-for="#result of results.slice(0, count - 1)" class="list-element" [class.warning-element]="result.warning">
         <div>
         <table>
-          <tr><td class="list-element-title"><strong>Order</strong></td> <td><a href="#" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#order" (click)="onUpdate(result.id)">{{ result.id }}</a></td></tr>
-          <tr><td class="list-element-title"><strong>Time</strong></td> <td>{{ result.ctime }}</td></tr>
-          <tr><td class="list-element-title"><strong>Name</strong></td><td>{{ result.name }}</td></tr>
-          <tr><td class="list-element-title"><strong>Phone</strong></td><td>{{ result.phone }}</td></tr>
-          <tr><td class="list-element-title"><strong>PSPT</strong></td><td>{{ result.passport }}</td></tr>
-          <tr><td class="list-element-title"><strong>Duration</strong></td><td>{{ result.start }} - {{ result.end }}</td></tr>
-          <tr *ng-if="result.bcard"><td class="list-element-title"><strong>BCard</strong></td><td>{{ result.bcard }}</td></tr>
-          <tr><td class="list-element-title"><strong>LCard</strong></td><td>{{ result.lcard }}</td></tr>
-          <tr><td class="list-element-title"><strong>Addr</strong></td><td>{{ result.address }}</td></tr>
-          <tr *ng-if="result.carrier"><td class="list-element-title"><strong>Carrier</strong></td><td>{{ result.carrier }}</td></tr>
-          <tr *ng-if="result.tracking"><td class="list-element-title"><strong>Track</strong></td><td>{{ result.tracking }}</td></tr>
-          <tr *ng-if="result.note"><td class="list-element-title"><strong>Note</strong></td><td>{{ result.note }}</td></tr>
+          <tr><td class="list-element-title"><strong>订单号</strong></td> <td><a href="#" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#order" (click)="onUpdate(result.id)">{{ result.id }}</a></td></tr>
+          <tr><td class="list-element-title"><strong>创建时间</strong></td> <td>{{ result.ctime }}</td></tr>
+          <tr><td class="list-element-title"><strong>姓名</strong></td><td>{{ result.name }}</td></tr>
+          <tr><td class="list-element-title"><strong>电话</strong></td><td>{{ result.phone }}</td></tr>
+          <tr><td class="list-element-title"><strong>护照</strong></td><td>{{ result.passport }}</td></tr>
+          <tr><td class="list-element-title"><strong>时间段</strong></td><td>{{ result.start }} - {{ result.end }}</td></tr>
+          <tr *ng-if="result.bcard"><td class="list-element-title"><strong>白卡</strong></td><td>{{ result.bcard }}</td></tr>
+          <tr><td class="list-element-title"><strong>逻辑卡</strong></td><td>{{ result.lcard }}</td></tr>
+          <tr><td class="list-element-title"><strong>地址</strong></td><td>{{ result.address }}</td></tr>
+          <tr *ng-if="result.carrier"><td class="list-element-title"><strong>快递公司</strong></td><td>{{ result.carrier }}</td></tr>
+          <tr *ng-if="result.tracking"><td class="list-element-title"><strong>快递号</strong></td><td>{{ result.tracking }}</td></tr>
+          <tr *ng-if="result.note"><td class="list-element-title"><strong>注释</strong></td><td>{{ result.note }}</td></tr>
         </table>
         </div>
       </div>
     </div>
     <ul class="pager" id="orders-pager">
-      <li class="previous" [class.disabled]="page === 1"><a href="#" (click)="onSearch('newer')"><span aria-hidden="true">&larr;</span> Newer</a></li>
-      <li class="next" [class.disabled]="results.length <= count"><a href="#" (click)="onSearch('older')">Older <span aria-hidden="true">&rarr;</span></a></li>
+      <li class="previous" [class.disabled]="page === 1"><a href="#" (click)="onSearch('newer')"><span aria-hidden="true">&larr;</span> 上一页</a></li>
+      <li class="next" [class.disabled]="results.length <= count"><a href="#" (click)="onSearch('older')">下一页 <span aria-hidden="true">&rarr;</span></a></li>
     </ul>
   </div>
 

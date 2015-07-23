@@ -2,7 +2,7 @@
   <div class="modal-content">
     <div *ng-if="state === 'wait'">
       <div class="modal-body">
-        please wait...
+        请稍候 ... 
       </div>
     </div>
     <div *ng-if="state !== 'wait'">
@@ -23,7 +23,7 @@
               <input class="form-control" type="text" *ng-if="group.ip" [placeholder]="group.ph" [readonly]="group.rd" [ng-control]="group.na" [value]="group.va">
               <select class="form-control" *ng-if="group.sl" [ng-control]="group.na" [disabled]="group.rd">
                 <option *ng-if="group.ph" value="" selected disabled>{{ group.ph }}</option>
-                <option *ng-for="#option of group.op; #i = index" [value]="option" [selected]="!group.ph && i === 0">{{ option }}</option>
+                <option *ng-for="#option of group.op; #i = index" [value]="option[0]" [selected]="!group.ph && i === 0">{{ option[1] }}</option>
               </select>
               <textarea class="form-control" rows="3" *ng-if="group.ta" [placeholder]="group.ph" [readonly]="group.rd" [ng-control]="group.na" [value]="group.va"></textarea>
               <i class="fa form-control-feedback" *ng-if="group.re && form.controls[group.na].value === ''"><span>*<span></i>
@@ -34,14 +34,14 @@
       </div>
       <div class="modal-footer">
         <div *ng-if="querying || deleting">
-          <button type="button" class="btn btn-warning" [class.pull-left]="deleting" form="order-form" disabled="disabled">Standby</button>
+          <button type="button" class="btn btn-warning" [class.pull-left]="deleting" form="order-form" disabled="disabled">请稍后</button>
         </div>
         <div *ng-if="!querying && !deleting">
-          <button type="button" class="btn btn-danger pull-left" form="order-form" *ng-if="(state === 'update' || state === 'revise') && !deleting" (click)="onDelete()">Delete</button>
-          <button type="button" class="btn btn-primary" form="order-form" *ng-if="state === 'revise'" (click)="onAnother()">Another</button>
-          <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state === 'update'">Update</button>
-          <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'insert'">Add</button>
-          <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'revise'">Revise</button>
+          <button type="button" class="btn btn-danger pull-left" form="order-form" *ng-if="(state === 'update' || state === 'revise') && !deleting" (click)="onDelete()">删除</button>
+          <button type="button" class="btn btn-primary" form="order-form" *ng-if="state === 'revise'" (click)="onAnother()">另一个</button>
+          <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state === 'update'">更新</button>
+          <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'insert'">添加</button>
+          <button type="submit" class="btn btn-primary" form="order-form" *ng-if="state == 'revise'">校订</button>
         </div>
         <div *ng-if="message.state === 'warning'" class="alert animated fadeIn alert-warning" role="alert">{{ message.text }}</div>
         <div *ng-if="message.state === 'error'" class="alert animated fadeIn alert-danger" role="alert">{{ message.text }}</div>

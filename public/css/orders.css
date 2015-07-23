@@ -77,9 +77,13 @@
   position: relative;
 }
 
+.warning-element {
+  background-color: rgba(205, 92, 92, 0.8);
+}
+
 .list-element-title {
   white-space: nowrap;
-  padding-right: 5px;
+  padding-right: 8px;
   vertical-align: top;
 }
 

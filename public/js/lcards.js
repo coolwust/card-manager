@@ -11,15 +11,15 @@ function LCardsSearch() {
       ctime:  new ng.Control('', validators.date),
       region: new ng.Control('')
     }),
-    page: 1, 
+    page: null,
     snapshot: {region: '', id: '', ctime: ''},
     count: 20, 
     results: [],
     get filter() {
       var filter = '';
-      filter += this.snapshot.region ? ', region=' + this.snapshot.region : '';
+      filter += this.snapshot.region ? ', 地区=' + this.snapshot.region : '';
       filter += this.snapshot.id ? ', id=' + this.snapshot.id : '';
-      filter += this.snapshot.ctime ? ', date=' + this.snapshot.ctime : '';
+      filter += this.snapshot.ctime ? ', 添加日期=' + this.snapshot.ctime : '';
       return filter ? filter.substr(1).toLowerCase() : '';
     }
   };

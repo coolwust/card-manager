@@ -8,37 +8,37 @@ function OrdersComponent(bag) {
   var self = this;
   this.groups = {
     bars: [
-      {name: 'any',      text: 'Any',           disabled: 1, placeholder: ''                                          },
-      {name: 'start',    text: 'Starting Date', disabled: 0, placeholder: 'YYYY.MM.DD', validator: validators.date    },
-      {name: 'end',      text: 'Ending Date',   disabled: 0, placeholder: 'YYYY.MM.DD', validator: validators.date    },
-      {name: 'ctime',    text: 'Creation Date', disabled: 0, placeholder: 'YYYY.MM.DD', validator: validators.date    },
-      {name: 'name',     text: 'Customer',      disabled: 0, placeholder: ''          , validator: validators.date    },
-      {name: 'id',       text: 'Order ID',      disabled: 0, placeholder: ''          , validator: validators.order   },
-      {name: 'phone',    text: 'Phone Number',  disabled: 0, placeholder: ''          , validator: validators.phone   },
-      {name: 'passport', text: 'Passport ID',   disabled: 0, placeholder: ''          , validator: validators.passport},
-      {name: 'lcard',    text: 'LCard ID',      disabled: 0, placeholder: ''          , validator: validators.lcard   },
-      {name: 'bcard',    text: 'BCard ID',      disabled: 0, placeholder: ''          , validator: validators.bcard   }
+      {name: 'any',      text: '搜索过滤', disabled: 1, placeholder: ''                                          },
+      {name: 'ctime',    text: '创建日期', disabled: 0, placeholder: 'YYYY.MM.DD', validator: validators.date    },
+      {name: 'id',       text: '订单号',   disabled: 0, placeholder: ''          , validator: validators.order   },
+      {name: 'start',    text: '开始日期', disabled: 0, placeholder: 'YYYY.MM.DD', validator: validators.date    },
+      {name: 'end',      text: '结束日期', disabled: 0, placeholder: 'YYYY.MM.DD', validator: validators.date    },
+      {name: 'name',     text: '姓名',     disabled: 0, placeholder: ''          , validator: validators.date    },
+      {name: 'phone',    text: '电话',     disabled: 0, placeholder: ''          , validator: validators.phone   },
+      {name: 'passport', text: '护照号',   disabled: 0, placeholder: ''          , validator: validators.passport},
+      {name: 'bcard',    text: '白卡',     disabled: 0, placeholder: ''          , validator: validators.bcard   },
+      {name: 'lcard',    text: '逻辑卡',   disabled: 0, placeholder: ''          , validator: validators.lcard   }
     ],
     switches: [
-      {name: 'table',    options: ['Active', 'Legacy']      },
-      {name: 'shipping', options: ['', 'Pending', 'Shipped']},
-      {name: 'health',   options: ['', 'Normal', 'Error']   }
+      {name: 'table',    options: [['order', '有效订单'], ['legacy', '历史订单']]},
+      {name: 'shipped',  options: [['null', '所有'], ['true', '已发货'], ['false', '未发货']]},
+      {name: 'warning',  options: [['null', '所有'], ['false', '正常订单'], ['true', '异常订单']]}
     ]
   };
+  this.bag = bag;
   this.form = new ng.ControlGroup({bar: new ng.Control('')});
   this.socket = bag.sockets.orders = io(config.host + ':' + config.port + '/orders');
   this.regions = config.regions;
-  this.bag = bag;
   this.bar = this.groups.bars[0];
   this.table = 'order';
-  this.shipping = '';
-  this.health = '';
-  this.state = 'searched';
-  this.message = '';
+  this.shipped = null;
+  this.warning = null;
+  this.state = null;
+  this.message = null;
   this.snapshot = null;
-  this.page = 1; 
-  this.count = 20;
+  this.page = null; 
   this.results = [];
+  this.count = 13;
   Object.defineProperty(this, 'valid', {
     get: function () {
       if (self.bar.vl) return self.bar.vl(self.form.controls.bar) === null;
@@ -82,11 +82,10 @@ OrdersComponent.prototype.onBar = function (i) {
 }
 
 OrdersComponent.prototype.onSwitch = function (name, value) {
-  if (name === 'table') {
-    this.table = value === 'Active' ? 'order' : 'legacy';
-  } else {
-    this[name] = value;
-  }
+  if (value === 'true') value = true;
+  if (value === 'false') value = false;
+  if (value === 'null') value = null;
+  this[name] = value;
 }
 
 OrdersComponent.prototype.onInsert = function () {
@@ -111,8 +110,8 @@ OrdersComponent.prototype.onSearch = function (action) {
     this.page++;
   } else {
     if (!this.valid || (this.bar.name !== 'any' && this.form.controls.bar.value === '')) return;
-    data.shipping = this.shipping;
-    data.health = this.health;
+    data.shipped = this.shipped;
+    data.warning = this.warning;
     data.domain = {name: self.bar.name, value: self.form.controls.bar.value};
     data.table = this.table;
     if (this.bar.name === 'end') {
@@ -133,6 +132,7 @@ OrdersComponent.prototype.onSearch = function (action) {
   this.state = 'standby';
   this.results = [];
   this.socket.removeAllListeners();
+  console.log(data);
   this.socket.emit('search', data);
   this.socket.on('searched', function (data) {
     if (data.error) {

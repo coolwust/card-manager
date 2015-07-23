@@ -6,8 +6,7 @@ function ConnectionComponent(bag) {
   var num;
   Object.defineProperty(this, 'message', {
     get: function () {
-      var message = 'The connection to the server has been lost. The server is ';
-      message += 'not found or may be down. Trying to reconnect #' + num + ' ' + this.dots;
+      var message = '连接服务器失败。请检查你的互联网连接，服务器也有可能已宕机。正在尝试重新架构连接 #' + num + ' ' + this.dots;
       return message;
     }
   });

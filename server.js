@@ -3,6 +3,7 @@
 var koa      = require('koa');
 var serve    = require('koa-static');
 var compress = require('koa-compress');
+var favicon  = require('koa-favicon');
 var co       = require('co');
 var marko    = require('marko');
 var http     = require('http');
@@ -23,6 +24,7 @@ var config   = require('./config/app.js');
 var app = koa();
 app.keys = config.keys;
 app.use(compress({ flush: zlib.Z_NO_FLUSH }));
+//app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(serve(__dirname + '/public'));
 app.use(session());
 app.use(auth());

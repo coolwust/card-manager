@@ -8,20 +8,20 @@
       <div class="panel-body">
         <form [ng-form-model]="search.form" (submit)="onSearch()">
           <div class="form-group has-feedback">
-            <input type="text" class="form-control" placeholder="Card ID" ng-control="id">
+            <input type="text" class="form-control" placeholder="逻辑卡 ID" ng-control="id">
             <i class="fa fa-exclamation-triangle form-control-feedback" *ng-if="!search.form.controls.id.valid"></i>
           </div>
           <div class="form-group has-feedback">
-            <input type="text" class="form-control" placeholder="Date Added (YYYY.MM.DD)" ng-control="ctime">
+            <input type="text" class="form-control" placeholder="添加日期 YYYY.MM.DD" ng-control="ctime">
             <i class="fa fa-exclamation-triangle form-control-feedback" *ng-if="!search.form.controls.ctime.valid"></i>
           </div>
           <div class="form-group">
             <select class="form-control" ng-control="region">
-              <option value="">All Region</option>
-              <option *ng-for="#c of regions" [value]="c">{{ c }}</option>
+              <option value="">所有地区</option>
+              <option *ng-for="#c of regions" [value]="c[0]">{{ c[1] }}</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-default">Search Cards</button>
+          <button type="submit" class="btn btn-primary">搜索</button>
         </form>
       </div>
     </div>
@@ -31,13 +31,13 @@
         <form [ng-form-model]="insert.form" (submit)="onInsert()">
           <div class="form-group">
             <select class="form-control" ng-control="region" [(ng-model)]="insert.query.region" required>
-              <option value="" disabled selected>Select a Region</option>
-              <option *ng-for="#c of regions" [value]="c">{{ c }}</option>
+              <option value="" disabled selected>请选择地区</option>
+              <option *ng-for="#c of regions" [value]="c[0]">{{ c[1] }}</option>
             </select>
           </div>
-          <p class="well">The file name should correspond to its region (like europe.txt), and card IDs are separated by newlines.</p>
+          <p class="well">上传的文件名应与地区所对应，当前支持 europe.txt 和 usa.txt，卡号应被回车所隔开。</p>
           <input type="file" id="file" required (change)="onScan($event)">
-          <button type="submit" class="btn btn-default pull-right">Add Cards</button>
+          <button type="submit" class="btn btn-primary pull-right">添加</button>
         </form>
       </div>
     </div>
@@ -48,22 +48,21 @@
   <div class="panel panel-default" *ng-if="state !== 'searched'">
     <div class="panel-body" *ng-if="state === 'inserted'">
       <span class="glyphicon glyphicon-saved" aria-hidden="true"></span>
-      <span>&nbspSuccessfully inserted {{ insert.info.inserted }} {{ insert.info.region.toLowerCase() }} cards.</span>
+      <span>&nbsp成功添加 {{ insert.info.inserted }} 张 {{ insert.info.region.toLowerCase() }} 卡.</span>
       <br *ng-if="insert.info.errors">
       <span *ng-if="insert.info.errors" class="glyphicon glyphicon-floppy-remove" aria-hidden="true"></span>
-      <span *ng-if="insert.info.errors">&nbspFailed inserted {{ insert.info.errors }} {{ insert.info.region }} cards.
-      It may be caused by duplicated records.</span>
+      <span *ng-if="insert.info.errors">&nbsp未能添加 {{ insert.info.errors }} 张 {{ insert.info.region }} 卡。原因一般是这些卡已被录入数据库。</span>
     </div>
     <div class="panel-body" *ng-if="state === 'unmatch'">
       <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-      <span>&nbspThe file name does not match the region you selected.</span>
+      <span>&nbsp地区名未能与文件名所对应。</span>
     </div>
     <div class="panel-body" *ng-if="state === 'standby'">
-      <span>Please standby ...</span>
+      <span>请稍候 ...</span>
     </div>
     <div class="panel-body" *ng-if="state === 'malformed'">
       <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-      <span>&nbspThe file you uploaded is malformed.</span>
+      <span>&nbsp文件已损坏。</span>
     </div>
     <div class="panel-body" *ng-if="state === 'failed'">
       <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
@@ -73,10 +72,10 @@
 
   <div *ng-if="state === 'searched'">
     <div id="search-info">
-      <span class="well well-sm">{{ search.total }} results</span>
-      <span class="well well-sm">{{ search.count }} results per page</span>
-      <span class="well well-sm">page {{ search.page }}</span>
-      <span class="well well-sm">order by date added</span>
+      <span class="well well-sm">搜索结果为 {{ search.total }} 张</span>
+      <span class="well well-sm">每页显示 {{ search.count }} 张</span>
+      <span class="well well-sm">当前页数 {{ search.page }}</span>
+      <span class="well well-sm">以添加日期排序</span>
       <span class="well well-sm" *ng-if="search.filter"> {{ search.filter }}</span>
     </div>
     <table class="table table-hover table-bordered">
@@ -89,8 +88,8 @@
       </tr>
     </table>
     <ul class="pager">
-      <li class="previous" [class.disabled]="search.page === 1"><a href="#" (click)="onSearch('newer')"><span aria-hidden="true">&larr;</span> Newer</a></li>
-      <li class="next" [class.disabled]="search.results.length <= search.count"><a href="#" (click)="onSearch('older')">Older <span aria-hidden="true">&rarr;</span></a></li>
+      <li class="previous" [class.disabled]="search.page === 1"><a href="#" (click)="onSearch('newer')"><span aria-hidden="true">&larr;</span> 上一页</a></li>
+      <li class="next" [class.disabled]="search.results.length <= search.count"><a href="#" (click)="onSearch('older')">下一页 <span aria-hidden="true">&rarr;</span></a></li>
     </ul>
   </div>
 
