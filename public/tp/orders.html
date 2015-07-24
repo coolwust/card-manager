@@ -51,13 +51,11 @@
 
   <div *ng-if="state === 'searched'">
     <div id="search-info">
-      <span class="well well-sm">搜索结果为 {{ total }} 条订单</span>
-      <span class="well well-sm">每页最多显示 {{ count }} 条</span>
-      <span class="well well-sm">当前页数 {{ page }}</span>
-      <!--
-      <span class="well well-sm">order by date added</span>
-      <span class="well well-sm">{{ filter }}</span>
-      -->
+      <span class="well well-sm">搜索到 {{ total }} 条订单</span>
+      <span class="well well-sm">每页显示 {{ count }} 条</span>
+      <span class="well well-sm">页数 {{ page }}/{{ totalPage }}</span>
+      <span class="well well-sm">{{ orderBy }}</span>
+      <span class="well well-sm">{{ criterias }}</span>
     </div>
     <div class="animated fadeIn" id="orders-list">
       <div *ng-for="#result of results.slice(0, count - 1)" class="list-element" [class.warning-element]="result.warning">

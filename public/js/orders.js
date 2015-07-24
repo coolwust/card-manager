@@ -38,22 +38,14 @@ function OrdersComponent(bag) {
   this.snapshot = null;
   this.page = null; 
   this.results = [];
-  this.count = 13;
+  this.count = 20;
+  this.orderBy = null;
+  this.criterias = null;
+  this.totalPage = null;
   Object.defineProperty(this, 'valid', {
     get: function () {
       if (self.bar.vl) return self.bar.vl(self.form.controls.bar) === null;
       return true;
-    }
-  });
-  Object.defineProperty(this, 'filter', {
-    get: function () {
-      var filter = '';
-      filter += this.snapshot.barName? ', ' + this.snapshot.barName : '';
-      filter += this.snapshot.barName ? '=' + this.snapshot.barValue : '';
-      filter += ', ' + this.snapshot.category;
-      filter += this.snapshot.shipping ? ', ' + this.snapshot.shipping : '';
-      filter += this.snapshot.health ? ', ' + this.snapshot.health : '';
-      return filter ? filter.substr(1).toLowerCase() : '';
     }
   });
   bag.navigation.location = 'orders';
@@ -132,7 +124,6 @@ OrdersComponent.prototype.onSearch = function (action) {
   this.state = 'standby';
   this.results = [];
   this.socket.removeAllListeners();
-  console.log(data);
   this.socket.emit('search', data);
   this.socket.on('searched', function (data) {
     if (data.error) {
@@ -142,6 +133,9 @@ OrdersComponent.prototype.onSearch = function (action) {
     }
     this.state = 'searched';
     this.total = data.total;
+    this.criterias = data.criterias;
+    this.orderBy = data.orderBy;
+    this.totalPage = Math.ceil(this.total/this.count);
     function findIndex(id, results) {
       for (var i = 0; i < results.length; i++) {
         if (results[i].id === id) return i;

@@ -604,6 +604,8 @@ describe('Test orders search upon data received', function () {
           expect(data.total).to.equal(3);
           expect(data.order.new_val.id).to.equal('3');
           expect(data.order.new_val.start).to.equal('2015.07.08');
+          expect(data.orderBy).to.equal('以开始日期从小到大排列');
+          expect(data.criterias).to.equal('搜索所有开始日期包括和在2015.07.10之前的，正常的，已发货的，有效订单');
         }
         if (i === 2) {
           expect(data.total).to.equal(3);
